@@ -302,7 +302,7 @@ universal-roadside-quoter (Database)
 **Estructura de Documento:**
 
 ```json
-// Document ID: assa_towing_base
+// Document ID: example_towing_base
 {
   "benefit_type": "monetary_cap",
   "currency": "CRC",
