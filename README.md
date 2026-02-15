@@ -307,9 +307,9 @@ universal-roadside-quoter (Database)
   "benefit_type": "monetary_cap",
   "currency": "CRC",
   "limit_value": 100000,
-  "partner_id": "assa",
-  "partner_name": "ASSA",
-  "plan_name": "ASSA",
+  "partner_id": "example",
+  "partner_name": "Example Partner",
+  "plan_name": "Example Plan",
   "service_category": "towing"
 }
 ```
@@ -319,9 +319,9 @@ universal-roadside-quoter (Database)
 | `benefit_type` | string | Tipo de límite | `"monetary_cap"` / `"km_cap"` / `"unlimited"` |
 | `currency` | string | Moneda del límite | `"CRC"` / `"USD"` |
 | `limit_value` | number | Valor del tope | `100000` (₡100,000) |
-| `partner_id` | string | ID del socio/aseguradora | `"assa"` / `"ins"` / `"davivienda"` |
-| `partner_name` | string | Nombre comercial | `"ASSA Compañía de Seguros"` |
-| `plan_name` | string | Nombre del plan | `"ASSA Plus"` / `"Básico"` |
+| `partner_id` | string | ID del socio/aseguradora | `"example"` |
+| `partner_name` | string | Nombre comercial | `"Example Partner"` |
+| `plan_name` | string | Nombre del plan | `"Example Plan"` |
 | `service_category` | string | Categoría de servicio | `"towing"` / `"heavy"` / `"light"` |
 
 **Ejemplos de Documentos:**
@@ -405,7 +405,7 @@ universal-roadside-quoter (Database)
   "service_category": "heavy",
   "tiers": {
     "base": {
-      "cost": 82500,
+      "cost": 50000,
       "included_km": 10
     },
     "extra": {
@@ -423,7 +423,7 @@ universal-roadside-quoter (Database)
 | `currency` | string | Moneda de cobro | `"CRC"` / `"USD"` |
 | `pricing_model` | string | Modelo de precio | `"tiered"` / `"flat"` / `"dynamic"` |
 | `service_category` | string | Categoría del servicio | `"heavy"` / `"light"` / `"towing"` |
-| `tiers.base.cost` | number | Precio base | `82500` |
+| `tiers.base.cost` | number | Precio base | `50000` |
 | `tiers.base.included_km` | number | KM incluidos | `10` |
 | `tiers.extra.cost_per_km` | number | Costo por KM adicional | `5000` |
 
