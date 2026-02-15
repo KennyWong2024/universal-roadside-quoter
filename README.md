@@ -417,14 +417,14 @@ universal-roadside-quoter (Database)
 
 | Campo | Tipo | Descripción | Valores |
 |-------|------|-------------|---------|
-| `billing_rules.charge_ps` | boolean | Cobrar provincia de San José | `true` / `false` |
-| `billing_rules.charge_sd` | boolean | Cobrar sábados y domingos | `true` / `false` |
+| `billing_rules.charge_ps` | boolean | Cobrar desde el punto de partida hasta el cliente | `true` / `false` |
+| `billing_rules.charge_sd` | boolean | Cobrar solo lo recorrido con el cliente | `true` / `false` |
 | `country_code` | string | País del servicio | `"CR"` / `"US"` |
 | `currency` | string | Moneda de cobro | `"CRC"` / `"USD"` |
 | `pricing_model` | string | Modelo de precio | `"tiered"` / `"flat"` / `"dynamic"` |
 | `service_category` | string | Categoría del servicio | `"heavy"` / `"light"` / `"towing"` |
 | `tiers.base.cost` | number | Precio base | `50000` |
-| `tiers.base.included_km` | number | KM incluidos | `10` |
+| `tiers.base.included_km` | number | KM incluidos en precio base | `10` |
 | `tiers.extra.cost_per_km` | number | Costo por KM adicional | `5000` |
 
 **Tipos de Modelos de Precio:**
@@ -450,17 +450,7 @@ universal-roadside-quoter (Database)
 // Ejemplo: ₡25,000 sin importar distancia
 ```
 
-3. **Dynamic (Dinámico):**
-```json
-{
-  "pricing_model": "dynamic",
-  "factors": {
-    "time_of_day": 1.2,  // 20% más en horario nocturno
-    "day_of_week": 1.1,  // 10% más fines de semana
-    "vehicle_size": 1.5  // 50% más para vehículos pesados
-  }
-}
-```
+
 
 ---
 
@@ -486,20 +476,16 @@ universal-roadside-quoter (Database)
 |-------|------|-------------|---------|
 | `country_code` | string | País de aplicación | `"CR"` |
 | `rates.iva` | number | IVA (decimal) | `0.13` (13%) |
-| `rates.service_charge` | number | Cargo por servicio | `0.10` (10%) |
 | `updated_at` | timestamp | Última actualización | ISO 8601 |
 
 **Cálculo de Precio Final:**
 
 ```javascript
 const basePrice = 50000;
-const taxConfig = { iva: 0.13, service_charge: 0.10 };
-
-const subtotal = basePrice * (1 + taxConfig.service_charge);
-// subtotal = 55000
+const taxConfig = { iva: 0.13 };
 
 const total = subtotal * (1 + taxConfig.iva);
-// total = 62150
+// total = 56500
 ```
 
 ---
@@ -587,11 +573,7 @@ graph TD
     G --> H[Calcular distancia y peajes]
     H --> I[Consultar tolls_matrix]
     I --> J[Sumar costos adicionales]
-    J --> K{¿Aplican cargos extras?}
-    K -->|Sábado/Domingo| L[+10% recargo fin de semana]
-    K -->|San José| M[+15% recargo provincia]
-    L --> N[Aplicar impuestos de tax_configurations]
-    M --> N
+    J --> N[Aplicar impuestos de tax_configurations]
     N --> O[Precio Final]
     O --> P[Mostrar cotización al usuario]
 ```
