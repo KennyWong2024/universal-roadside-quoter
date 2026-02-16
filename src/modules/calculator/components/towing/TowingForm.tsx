@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { LabeledInput } from '@/shared/ui/forms/LabeledInput';
 import { SearchableSelect } from '@/shared/ui/forms/SearchableSelect';
 import { CheckboxChip } from '@/shared/ui/forms/CheckboxChip';
-import { Info, Truck } from 'lucide-react';
+import { Car, Truck } from 'lucide-react';
 import { useBenefits, type Benefit } from '@/shared/hooks/useBenefits';
 import { useTolls } from '@/shared/hooks/useTolls';
 import { useTowingQuote } from '@/modules/calculator/engine/useTowingQuote';
@@ -55,9 +55,9 @@ export const TowingForm = () => {
 
             <div className="xl:col-span-2 space-y-8">
                 <section className="space-y-6">
-                    <div className="flex items-center gap-2 text-blue-500 dark:text-blue-400">
-                        <Info size={18} />
-                        <h3 className="text-sm font-bold uppercase tracking-widest">Datos del Servicio</h3>
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                        <Car size={20} />
+                        <h3 className="text-sm font-bold uppercase tracking-widest">Datos Grúa Liviana</h3>
                     </div>
 
                     <SearchableSelect
@@ -75,8 +75,8 @@ export const TowingForm = () => {
                                 Plan: <strong>{selectedBenefit.plan_name}</strong> |
                                 Cobertura: {
                                     selectedBenefit.currency
-                                        ? ` ${selectedBenefit.limit_value.toLocaleString('es-CR')} ${selectedBenefit.currency}`
-                                        : ` ${selectedBenefit.limit_value} KM`
+                                        ? ` ${(selectedBenefit.limit_value || 0).toLocaleString('es-CR')} ${selectedBenefit.currency}`
+                                        : ` ${(selectedBenefit.limit_value || 0)} KM`
                                 }
                             </span>
                         </div>
