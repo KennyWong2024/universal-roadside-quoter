@@ -4,9 +4,10 @@ import { type TaxiRate } from '../../hooks/useAirportRates';
 
 interface AirportRatesTableProps {
     rates: TaxiRate[];
+    onEdit: (rate: TaxiRate) => void;
 }
 
-export const AirportRatesTable = ({ rates }: AirportRatesTableProps) => {
+export const AirportRatesTable = ({ rates, onEdit }: AirportRatesTableProps) => {
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
 
@@ -32,6 +33,7 @@ export const AirportRatesTable = ({ rates }: AirportRatesTableProps) => {
                 </div>
             </div>
 
+            {/* Tabla */}
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
@@ -84,8 +86,9 @@ export const AirportRatesTable = ({ rates }: AirportRatesTableProps) => {
                                     <td className="p-4 text-center">
                                         {isAdmin && (
                                             <button
-                                                className="p-1.5 text-slate-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all opacity-0 group-hover/row:opacity-100"
-                                                title="Editar tarifa (Próximamente)"
+                                                onClick={() => onEdit(rate)}
+                                                className="p-1.5 text-slate-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all opacity-0 group-hover/row:opacity-100 cursor-pointer"
+                                                title="Editar tarifa"
                                             >
                                                 <Pencil size={14} />
                                             </button>

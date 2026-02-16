@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Info, Plane, Settings, Plus } from 'lucide-react';
 import { useCostMatrix } from '../hooks/useCostMatrix';
 import { useUpdateCost } from '../hooks/useUpdateCost';
-import { useAirportRates } from '../hooks/useAirportRates';
+import { useAirportRates, type TaxiRate } from '../hooks/useAirportRates';
 import { useAirportRatesManager } from '../hooks/useAirportRatesManager';
+
 import { AirportRatesTable } from '../components/taxi/AirportRatesTable';
 import { AirportRatesFilters } from '../components/taxi/AirportRatesFilters';
 import { RateFormModal } from '../components/taxi/RateFormModal';
+
 import { TariffCard } from '../components/TariffCard';
 import { FuelCard } from '../components/FuelCard';
 import { TollsTableCard } from '../components/TollsTableCard';
@@ -14,12 +16,15 @@ import { TollsTableCard } from '../components/TollsTableCard';
 export const CostsPage = () => {
     const [activeTab, setActiveTab] = useState<'general' | 'taxi'>('general');
     const [filters, setFilters] = useState({ province: '', canton: '', district: '' });
+
     const [isRateModalOpen, setIsRateModalOpen] = useState(false);
+    const [selectedRate, setSelectedRate] = useState<TaxiRate | null>(null);
 
     const { tariffs, tolls, fuel, loading: loadingMatrix } = useCostMatrix();
     const { rates: airportRates, loading: loadingRates } = useAirportRates();
     const { updateCostDocument } = useUpdateCost();
     const { saveRate } = useAirportRatesManager();
+
     const filteredRates = airportRates.filter(rate => {
         const matchesProvince = filters.province ? rate.location.province === filters.province : true;
         const matchesCanton = filters.canton ? rate.location.canton === filters.canton : true;
@@ -30,6 +35,16 @@ export const CostsPage = () => {
     if (loadingMatrix || loadingRates) {
         return <div className="p-8 text-slate-500 animate-pulse text-center">Cargando matriz...</div>;
     }
+
+    const handleEditRate = (rate: TaxiRate) => {
+        setSelectedRate(rate);
+        setIsRateModalOpen(true);
+    };
+
+    const handleNewRate = () => {
+        setSelectedRate(null);
+        setIsRateModalOpen(true);
+    };
 
     const handleSaveTariff = async (id: string, newData: any) => {
         await updateCostDocument('service_tariffs', id, newData);
@@ -75,6 +90,7 @@ export const CostsPage = () => {
                     />
                 </div>
             </div>
+
             {activeTab === 'general' && (
                 <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -103,7 +119,7 @@ export const CostsPage = () => {
 
                         <div className="w-full xl:w-auto flex justify-end xl:mt-6">
                             <button
-                                onClick={() => setIsRateModalOpen(true)}
+                                onClick={handleNewRate}
                                 className="flex items-center gap-2 bg-slate-900 dark:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 active:scale-95 transition-all w-full xl:w-auto justify-center"
                             >
                                 <Plus size={18} /> AGREGAR TARIFA
@@ -114,13 +130,18 @@ export const CostsPage = () => {
                     <div className="text-xs text-slate-400 font-medium px-2">
                         Mostrando {filteredRates.length} tarifas de {airportRates.length} totales
                     </div>
-                    <AirportRatesTable rates={filteredRates} />
+
+                    <AirportRatesTable
+                        rates={filteredRates}
+                        onEdit={handleEditRate}
+                    />
 
                     <RateFormModal
                         isOpen={isRateModalOpen}
                         onClose={() => setIsRateModalOpen(false)}
                         onSave={saveRate}
                         existingRates={airportRates}
+                        initialData={selectedRate}
                     />
                 </div>
             )}
@@ -134,7 +155,6 @@ export const CostsPage = () => {
     );
 };
 
-// Componente Auxiliar para Pestañas
 const TabButton = ({ isActive, onClick, icon, label }: any) => (
     <button
         onClick={onClick}
