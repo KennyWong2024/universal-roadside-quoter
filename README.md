@@ -734,36 +734,10 @@ Este es un proyecto de aprendizaje personal, pero las contribuciones son bienven
 
 ---
 
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver archivo [LICENSE](LICENSE) para más detalles.
-
-```
-MIT License
-
-Copyright (c) 2026 Kenny R. Ramos Wong
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files...
-```
-
----
-
 ## 📞 Contacto
 
 **Kenny R. Ramos Wong**
 - Email: kennywong080122@gmail.com
-- GitHub: [@tu-usuario](https://github.com/tu-usuario)
-- LinkedIn: [Tu Perfil](https://linkedin.com/in/tu-perfil)
-
----
-
-## 🙏 Agradecimientos
-
-- **Firebase** por su increíble plan gratuito
-- **React Team** por la mejor librería de UI
-- **Tailwind CSS** por hacer el CSS divertido de nuevo
-- **La comunidad open-source** por todo el conocimiento compartido
 
 ---
 
