@@ -11,11 +11,11 @@ import { RateFormModal } from '../components/taxi/RateFormModal';
 import { TariffCard } from '../components/TariffCard';
 import { FuelCard } from '../components/FuelCard';
 import { TollsTableCard } from '../components/TollsTableCard';
+import { AirportConfigCard } from '../components/AirportConfigCard';
 
 export const CostsPage = () => {
     const [activeTab, setActiveTab] = useState<'general' | 'taxi'>('general');
     const [filters, setFilters] = useState({ province: '', canton: '', district: '' });
-
     const [isRateModalOpen, setIsRateModalOpen] = useState(false);
     const [selectedRate, setSelectedRate] = useState<TaxiRate | null>(null);
 
@@ -57,16 +57,19 @@ export const CostsPage = () => {
     const handleSaveTariff = async (id: string, newData: any) => {
         await updateCostDocument('service_tariffs', id, newData);
     };
+
     const handleSaveToll = async (id: string, newPrices: any) => {
         await updateCostDocument('tolls_matrix', id, { prices: newPrices });
     };
+
     const handleSaveFuel = async (newPrices: any) => {
         await updateCostDocument('fuel_prices', 'CR_current_prices', { prices: newPrices });
     };
 
     const towing = tariffs.find((t: any) => t.service_category === 'towing');
     const heavy = tariffs.find((t: any) => t.service_category === 'heavy');
-    const taxi = tariffs.find((t: any) => t.service_category === 'taxi');
+    const taxiBase = tariffs.find((t: any) => t.service_category === 'taxi');
+    const airportConfig = tariffs.find((t: any) => t.service_category === 'airport');
     const route27Tolls = tolls.filter((t: any) => t.route === 'Ruta 27');
     const nationalTolls = tolls.filter((t: any) => t.route !== 'Ruta 27');
 
@@ -101,10 +104,11 @@ export const CostsPage = () => {
 
             {activeTab === 'general' && (
                 <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                         {towing && <TariffCard title="Grúa Liviana" type="towing" data={towing} onSave={handleSaveTariff} />}
                         {heavy && <TariffCard title="Grúa Pesada" type="heavy" data={heavy} onSave={handleSaveTariff} />}
-                        {taxi && <TariffCard title="Taxi (Base)" type="taxi" data={taxi} onSave={handleSaveTariff} />}
+                        {taxiBase && <TariffCard title="Taxi (Base)" type="taxi" data={taxiBase} onSave={handleSaveTariff} />}
+                        {airportConfig && <AirportConfigCard data={airportConfig} onSave={handleSaveTariff} />}
                         {fuel && <FuelCard data={fuel} onSave={handleSaveFuel} />}
                     </div>
 
