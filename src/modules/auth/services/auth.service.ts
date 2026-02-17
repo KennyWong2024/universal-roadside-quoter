@@ -6,6 +6,22 @@ import type { UserProfile } from "../types/auth.types";
 const googleProvider = new GoogleAuthProvider();
 
 export const AuthService = {
+    validateUserPermissions: async (email: string): Promise<any> => {
+        const userDocRef = doc(db, "allowed_users", email);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (!userDocSnap.exists()) {
+            throw new Error("Usuario no autorizado en base de datos.");
+        }
+
+        const userData = userDocSnap.data();
+        if (!userData.active) {
+            throw new Error("Usuario desactivado.");
+        }
+
+        return userData;
+    },
+
     loginWithGoogle: async (): Promise<UserProfile> => {
         try {
             const userCredential = await signInWithPopup(auth, googleProvider);
@@ -13,15 +29,8 @@ export const AuthService = {
 
             if (!user.email) throw new Error("No se obtuvo email de Google.");
 
-            const userDocRef = doc(db, "allowed_users", user.email);
-            const userDocSnap = await getDoc(userDocRef);
+            const userData = await AuthService.validateUserPermissions(user.email);
 
-            if (!userDocSnap.exists()) {
-                await signOut(auth);
-                throw new Error("Usuario no autorizado.");
-            }
-
-            const userData = userDocSnap.data();
             return {
                 uid: user.uid,
                 email: user.email,
@@ -32,6 +41,7 @@ export const AuthService = {
 
         } catch (error: any) {
             console.error("Auth Error:", error);
+            await signOut(auth);
             throw error;
         }
     },
