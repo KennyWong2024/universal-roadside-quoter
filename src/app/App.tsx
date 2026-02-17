@@ -5,6 +5,7 @@ import { DashboardLayout } from '@/shared/layouts/DashboardLayout';
 import { CalculatorLayout } from '@/modules/calculator/components/CalculatorLayout';
 import { CostsPage } from '@/modules/costs/pages/CostsPage';
 import { UserManagementPage } from '@/modules/admin/pages/UserManagementPage';
+import { BenefitsPage } from '@/modules/benefits/pages/BenefitsPage';
 
 function App() {
   const { user } = useAuthStore();
@@ -18,6 +19,7 @@ function App() {
           <Route index element={<Navigate to="/cotizador" replace />} />
           <Route path="cotizador" element={<CalculatorLayout />} />
           <Route path="matriz-costos" element={<CostsPage />} />
+          <Route path="matriz-beneficios" element={<BenefitsPage />} />
           <Route path="usuarios" element={<UserManagementPage />} />
           <Route path="notas" element={<div className="p-8 text-slate-500">Historial de Notas</div>} />
         </Route>

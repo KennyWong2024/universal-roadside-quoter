@@ -22,6 +22,7 @@ export const DashboardLayout = () => {
                     <NavItem to="/cotizador" icon={<Calculator size={20} />} label="Cotizador" />
                     <NavItem to="/notas" icon={<FileText size={20} />} label="Notas" />
                     <NavItem to="/matriz-costos" icon={<Table2 size={20} />} label="Matriz Costos" />
+                    <NavItem to="/matriz-beneficios" icon={<Table2 size={20} />} label="Matriz Beneficios" />
                     {user?.role === 'admin' && (
                         <NavItem to="/usuarios" icon={<Users size={20} />} label="Usuarios" />
                     )}
