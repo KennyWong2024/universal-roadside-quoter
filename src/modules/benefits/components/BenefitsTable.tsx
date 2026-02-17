@@ -1,4 +1,4 @@
-import { Shield, TrendingUp, Map, Pencil, Trash2 } from 'lucide-react';
+import { Shield, TrendingUp, Map, Pencil, Trash2, Plane } from 'lucide-react';
 import { type Benefit } from '../hooks/useBenefitsMatrix';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
 
@@ -64,7 +64,25 @@ export const BenefitsTable = ({ data, categoryLabel, onEdit, onDelete }: Benefit
                                         <div className="font-bold text-slate-700 dark:text-white">{benefit.partner_name}</div>
                                         <div className="text-[10px] text-slate-400 font-mono">ID: {benefit.partner_id}</div>
                                     </td>
-                                    <td className="p-4 text-sm text-slate-600 dark:text-slate-300">{benefit.plan_name}</td>
+
+                                    <td className="p-4">
+                                        <div className="text-sm text-slate-600 dark:text-slate-300 font-medium">{benefit.plan_name}</div>
+
+                                        {benefit.service_category === 'airport' && (
+                                            <div className="mt-1 flex items-center gap-2">
+                                                {benefit.apply_airport_fee !== false ? (
+                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                                                        <Plane size={10} /> CON FEE (1.34x)
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                                                        <Plane size={10} /> TARIFA PLANA
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </td>
+
                                     <td className="p-4">
                                         {benefit.benefit_type === 'monetary_cap' ? (
                                             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase tracking-wide">
@@ -76,6 +94,7 @@ export const BenefitsTable = ({ data, categoryLabel, onEdit, onDelete }: Benefit
                                             </span>
                                         )}
                                     </td>
+
                                     <td className="p-4 text-right">{formatLimit(benefit)}</td>
 
                                     <td className="p-4 flex justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">

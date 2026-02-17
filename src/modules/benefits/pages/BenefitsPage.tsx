@@ -78,7 +78,7 @@ export const BenefitsPage = () => {
                 <TabButton active={activeTab === 'towing'} onClick={() => setActiveTab('towing')} icon={<Car size={18} />} label="Grúa Liviana" />
                 <TabButton active={activeTab === 'heavy'} onClick={() => setActiveTab('heavy')} icon={<Truck size={18} />} label="Grúa Pesada" />
                 <TabButton active={activeTab === 'airport'} onClick={() => setActiveTab('airport')} icon={<Plane size={18} />} label="Taxi Aeropuerto" />
-                <TabButton active={activeTab === 'taxi'} onClick={() => setActiveTab('taxi')} icon={<Car size={18} />} label="Taxi Urbano" />
+                <TabButton active={activeTab === 'taxi'} onClick={() => setActiveTab('taxi')} icon={<Car size={18} />} label="Taxi por Avería" />
                 <TabButton active={activeTab === 'home'} onClick={() => setActiveTab('home')} icon={<Home size={18} />} label="Hogar" />
             </div>
 
