@@ -3,6 +3,7 @@ import { Car, Plane, Home, Truck } from 'lucide-react';
 import { GlassCard } from '@/shared/ui/GlassCard';
 import { TowingForm } from './towing/TowingForm';
 import { HeavyTowingForm } from './heavy/HeavyTowingForm';
+import { AirportForm } from './airport/AirportForm';
 
 export const CalculatorLayout = () => {
     const { activeTab, setActiveTab } = useCalculatorStore();
@@ -59,10 +60,7 @@ export const CalculatorLayout = () => {
                 )}
 
                 {activeTab === 'taxi_airport' && (
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center text-slate-400 py-20">
-                        <Plane size={48} className="mx-auto mb-4 opacity-20" />
-                        <p className="font-medium">Módulo de Taxi Aeropuerto pendiente</p>
-                    </div>
+                    <AirportForm />
                 )}
 
                 {activeTab === 'home' && (

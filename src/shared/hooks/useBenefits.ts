@@ -11,6 +11,7 @@ export interface Benefit {
     benefit_type: 'monetary_cap' | 'distance_cap' | 'full_coverage';
     limit_value: number;
     currency: string | null;
+    apply_airport_fee?: boolean;
 }
 
 export const useBenefits = (category: string) => {
@@ -31,6 +32,7 @@ export const useBenefits = (category: string) => {
                 querySnapshot.forEach((doc) => {
                     data.push({ id: doc.id, ...doc.data() } as Benefit);
                 });
+
                 setBenefits(data.sort((a, b) => a.plan_name.localeCompare(b.plan_name)));
             } catch (error) {
                 console.error("Error fetching benefits:", error);
