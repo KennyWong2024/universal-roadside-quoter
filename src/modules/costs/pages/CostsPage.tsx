@@ -1,14 +1,13 @@
 import { useState } from 'react';
 import { Info, Plane, Settings, Plus } from 'lucide-react';
+import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { useCostMatrix } from '../hooks/useCostMatrix';
 import { useUpdateCost } from '../hooks/useUpdateCost';
 import { useAirportRates, type TaxiRate } from '../hooks/useAirportRates';
 import { useAirportRatesManager } from '../hooks/useAirportRatesManager';
-
 import { AirportRatesTable } from '../components/taxi/AirportRatesTable';
 import { AirportRatesFilters } from '../components/taxi/AirportRatesFilters';
 import { RateFormModal } from '../components/taxi/RateFormModal';
-
 import { TariffCard } from '../components/TariffCard';
 import { FuelCard } from '../components/FuelCard';
 import { TollsTableCard } from '../components/TollsTableCard';
@@ -19,6 +18,9 @@ export const CostsPage = () => {
 
     const [isRateModalOpen, setIsRateModalOpen] = useState(false);
     const [selectedRate, setSelectedRate] = useState<TaxiRate | null>(null);
+
+    const { user } = useAuthStore();
+    const isAdmin = user?.role === 'admin';
 
     const { tariffs, tolls, fuel, loading: loadingMatrix } = useCostMatrix();
     const { rates: airportRates, loading: loadingRates } = useAirportRates();
@@ -117,14 +119,16 @@ export const CostsPage = () => {
                             />
                         </div>
 
-                        <div className="w-full xl:w-auto flex justify-end xl:mt-6">
-                            <button
-                                onClick={handleNewRate}
-                                className="flex items-center gap-2 bg-slate-900 dark:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 active:scale-95 transition-all w-full xl:w-auto justify-center"
-                            >
-                                <Plus size={18} /> AGREGAR TARIFA
-                            </button>
-                        </div>
+                        {isAdmin && (
+                            <div className="w-full xl:w-auto flex justify-end xl:mt-6">
+                                <button
+                                    onClick={handleNewRate}
+                                    className="flex items-center gap-2 bg-slate-900 dark:bg-blue-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 active:scale-95 transition-all w-full xl:w-auto justify-center"
+                                >
+                                    <Plus size={18} /> AGREGAR TARIFA
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="text-xs text-slate-400 font-medium px-2">
