@@ -25,7 +25,7 @@ export const CostsPage = () => {
     const { tariffs, tolls, fuel, loading: loadingMatrix } = useCostMatrix();
     const { rates: airportRates, loading: loadingRates } = useAirportRates();
     const { updateCostDocument } = useUpdateCost();
-    const { saveRate } = useAirportRatesManager();
+    const { saveRate, deleteRate } = useAirportRatesManager();
 
     const filteredRates = airportRates.filter(rate => {
         const matchesProvince = filters.province ? rate.location.province === filters.province : true;
@@ -46,6 +46,12 @@ export const CostsPage = () => {
     const handleNewRate = () => {
         setSelectedRate(null);
         setIsRateModalOpen(true);
+    };
+
+    const handleDeleteRate = async (id: string) => {
+        if (window.confirm("¿Estás seguro de que deseas eliminar esta ruta? Esta acción es irreversible.")) {
+            await deleteRate(id);
+        }
     };
 
     const handleSaveTariff = async (id: string, newData: any) => {
@@ -138,6 +144,7 @@ export const CostsPage = () => {
                     <AirportRatesTable
                         rates={filteredRates}
                         onEdit={handleEditRate}
+                        onDelete={handleDeleteRate}
                     />
 
                     <RateFormModal

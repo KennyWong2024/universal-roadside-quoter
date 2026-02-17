@@ -1,13 +1,14 @@
-import { Plane, MapPin, Pencil } from 'lucide-react';
+import { Plane, MapPin, Pencil, Trash2 } from 'lucide-react';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { type TaxiRate } from '../../hooks/useAirportRates';
 
 interface AirportRatesTableProps {
     rates: TaxiRate[];
     onEdit: (rate: TaxiRate) => void;
+    onDelete: (id: string) => void;
 }
 
-export const AirportRatesTable = ({ rates, onEdit }: AirportRatesTableProps) => {
+export const AirportRatesTable = ({ rates, onEdit, onDelete }: AirportRatesTableProps) => {
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
 
@@ -33,7 +34,6 @@ export const AirportRatesTable = ({ rates, onEdit }: AirportRatesTableProps) => 
                 </div>
             </div>
 
-            {/* Tabla */}
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
@@ -43,7 +43,7 @@ export const AirportRatesTable = ({ rates, onEdit }: AirportRatesTableProps) => 
                             <th className="p-4 text-[10px] font-bold text-slate-400 uppercase w-1/4">Distrito</th>
                             <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-center w-24">Aeropuerto</th>
                             <th className="p-4 text-[10px] font-bold text-slate-400 uppercase text-right w-32">Tarifa</th>
-                            <th className="p-4 w-12"></th>
+                            <th className="p-4 w-20"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -68,11 +68,11 @@ export const AirportRatesTable = ({ rates, onEdit }: AirportRatesTableProps) => 
 
                                     <td className="p-4 text-center">
                                         <span className={`text-[10px] font-black px-2 py-1 rounded-md uppercase tracking-tight
-                      ${rate.airport_id === 'SJO'
+                                            ${rate.airport_id === 'SJO'
                                                 ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
                                                 : 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300'
                                             }
-                    `}>
+                                        `}>
                                             {rate.airport_id}
                                         </span>
                                     </td>
@@ -83,15 +83,25 @@ export const AirportRatesTable = ({ rates, onEdit }: AirportRatesTableProps) => 
                                         </div>
                                     </td>
 
-                                    <td className="p-4 text-center">
+                                    <td className="p-4 text-right">
                                         {isAdmin && (
-                                            <button
-                                                onClick={() => onEdit(rate)}
-                                                className="p-1.5 text-slate-300 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all opacity-0 group-hover/row:opacity-100 cursor-pointer"
-                                                title="Editar tarifa"
-                                            >
-                                                <Pencil size={14} />
-                                            </button>
+                                            <div className="flex justify-end gap-1 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                                                <button
+                                                    onClick={() => onEdit(rate)}
+                                                    className="p-1.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                                                    title="Editar tarifa"
+                                                >
+                                                    <Pencil size={14} />
+                                                </button>
+
+                                                <button
+                                                    onClick={() => onDelete(rate.id)}
+                                                    className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                                                    title="Eliminar ruta"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            </div>
                                         )}
                                     </td>
                                 </tr>

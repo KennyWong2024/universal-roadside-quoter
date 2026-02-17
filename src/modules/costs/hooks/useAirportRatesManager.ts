@@ -1,35 +1,36 @@
 import { useState } from 'react';
-import { doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
-import { type TaxiRate } from './useAirportRates';
+import { useAirportRates } from './useAirportRates';
 
 export const useAirportRatesManager = () => {
     const [isSaving, setIsSaving] = useState(false);
+    const { refresh } = useAirportRates();
 
-    const saveRate = async (rate: Omit<TaxiRate, 'id'>) => {
+    const saveRate = async (rateData: any) => {
         setIsSaving(true);
         try {
-            const clean = (str: string) => str.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
-            const id = `CR_${clean(rate.location.province)}_${clean(rate.location.canton)}_${clean(rate.location.district)}_${rate.airport_id}`;
-
-            const docRef = doc(db, 'airport_taxi_rates', id);
             const keywords = [
-                rate.location.province,
-                rate.location.canton,
-                rate.location.district,
-                rate.airport_id,
+                rateData.location.province,
+                rateData.location.canton,
+                rateData.location.district,
+                rateData.airport_id,
                 'costa rica'
             ].map(k => k.toLowerCase());
 
-            await setDoc(docRef, {
-                ...rate,
-                search_keywords: keywords
-            }, { merge: true });
+            const payload = { ...rateData, search_keywords: keywords };
 
+            if (rateData.id) {
+                const { id, ...data } = payload;
+                await updateDoc(doc(db, 'airport_taxi_rates', id), data);
+            } else {
+                await addDoc(collection(db, 'airport_taxi_rates'), payload);
+            }
+
+            await refresh();
             return true;
         } catch (error) {
             console.error("Error guardando tarifa:", error);
-            alert("Error al guardar. Revisa la consola.");
             return false;
         } finally {
             setIsSaving(false);
@@ -37,11 +38,16 @@ export const useAirportRatesManager = () => {
     };
 
     const deleteRate = async (id: string) => {
-        if (!window.confirm("¿Seguro que deseas eliminar esta tarifa?")) return;
+        setIsSaving(true);
         try {
             await deleteDoc(doc(db, 'airport_taxi_rates', id));
+            await refresh();
+            return true;
         } catch (error) {
-            console.error("Error eliminando:", error);
+            console.error("Error eliminando tarifa:", error);
+            return false;
+        } finally {
+            setIsSaving(false);
         }
     };
 
