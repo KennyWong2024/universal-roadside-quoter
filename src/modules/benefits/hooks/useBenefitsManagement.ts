@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { collection, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
+import { useBenefitsContext } from '../../../shared/context/BenefitsContext';
 
 export const useBenefitsManagement = () => {
     const [isSaving, setIsSaving] = useState(false);
+    const { refreshBenefits } = useBenefitsContext();
+
     const saveBenefit = async (benefit: any) => {
         setIsSaving(true);
         try {
@@ -27,6 +30,8 @@ export const useBenefitsManagement = () => {
                 await addDoc(collection(db, 'benefits_matrix'), finalPayload);
             }
 
+            await refreshBenefits();
+
             return true;
         } catch (error) {
             console.error("Error guardando beneficio:", error);
@@ -41,6 +46,7 @@ export const useBenefitsManagement = () => {
         if (!window.confirm("¿Seguro que deseas eliminar este plan de beneficios?")) return;
         try {
             await deleteDoc(doc(db, 'benefits_matrix', id));
+            await refreshBenefits();
         } catch (error) {
             console.error("Error eliminando:", error);
         }

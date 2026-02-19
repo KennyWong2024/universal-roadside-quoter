@@ -3,13 +3,14 @@ import { HeartHandshake, Truck, Car, Plane, Home, Plus, Search, Fuel } from 'luc
 import { useBenefitsMatrix, type Benefit } from '../hooks/useBenefitsMatrix';
 import { useBenefitsManagement } from '../hooks/useBenefitsManagement';
 import { BenefitsTable } from '../components/BenefitsTable';
-import { FuelBenefitsTable } from '../components/FuelBenefitsTable';
 import { BenefitFormModal } from '../components/BenefitFormModal';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
+import { FuelBenefitsTable } from '../components/FuelBenefitsTable';
+import { BenefitsProvider } from '../../../shared/context/BenefitsContext';
 
 type TabType = 'fuel' | 'towing' | 'heavy' | 'airport' | 'taxi' | 'home';
 
-export const BenefitsPage = () => {
+const BenefitsPageContent = () => {
     const [activeTab, setActiveTab] = useState<TabType>('fuel');
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -54,7 +55,6 @@ export const BenefitsPage = () => {
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-20">
-
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-indigo-600 rounded-xl text-white shadow-lg shadow-indigo-500/20">
@@ -122,7 +122,6 @@ export const BenefitsPage = () => {
                 initialData={selectedBenefit}
                 defaultCategory={activeTab}
             />
-
         </div>
     );
 };
@@ -140,3 +139,11 @@ const TabButton = ({ active, onClick, icon, label }: any) => (
         <span>{label}</span>
     </button>
 );
+
+export const BenefitsPage = () => {
+    return (
+        <BenefitsProvider>
+            <BenefitsPageContent />
+        </BenefitsProvider>
+    );
+};
