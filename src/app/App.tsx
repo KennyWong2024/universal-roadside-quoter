@@ -8,10 +8,9 @@ import { CalculatorLayout } from '@/modules/calculator/components/CalculatorLayo
 import { CostsPage } from '@/modules/costs/pages/CostsPage';
 import { UserManagementPage } from '@/modules/admin/pages/UserManagementPage';
 import { BenefitsPage } from '@/modules/benefits/pages/BenefitsPage';
-
-// GUARDIANES GLOBALES (CONTEXTOS)
 import { BenefitsProvider } from '@/shared/context/BenefitsContext';
 import { ExchangeRateProvider } from '@/shared/context/ExchangeRateContext';
+import { TollsProvider } from '@/shared/context/TollsContext';
 
 function App() {
   const { user, status, checkSession } = useAuthStore();
@@ -42,24 +41,26 @@ function App() {
     <BrowserRouter>
       <BenefitsProvider>
         <ExchangeRateProvider>
-          <Routes>
-            <Route path="/" element={<DashboardLayout />}>
-              <Route index element={<Navigate to="/cotizador" replace />} />
-              <Route path="cotizador" element={<CalculatorLayout />} />
-              <Route path="matriz-costos" element={<CostsPage />} />
-              <Route path="matriz-beneficios" element={<BenefitsPage />} />
-              <Route path="usuarios" element={<UserManagementPage />} />
-              <Route
-                path="notas"
-                element={
-                  <div className="p-8 text-slate-500 dark:text-slate-400 italic">
-                    El gestor de notas estará disponible pronto.
-                  </div>
-                }
-              />
-            </Route>
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <TollsProvider>
+            <Routes>
+              <Route path="/" element={<DashboardLayout />}>
+                <Route index element={<Navigate to="/cotizador" replace />} />
+                <Route path="cotizador" element={<CalculatorLayout />} />
+                <Route path="matriz-costos" element={<CostsPage />} />
+                <Route path="matriz-beneficios" element={<BenefitsPage />} />
+                <Route path="usuarios" element={<UserManagementPage />} />
+                <Route
+                  path="notas"
+                  element={
+                    <div className="p-8 text-slate-500 dark:text-slate-400 italic">
+                      El gestor de notas estará disponible pronto.
+                    </div>
+                  }
+                />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </TollsProvider>
         </ExchangeRateProvider>
       </BenefitsProvider>
     </BrowserRouter>
