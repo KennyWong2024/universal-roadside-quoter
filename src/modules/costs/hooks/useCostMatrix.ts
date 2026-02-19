@@ -1,41 +1,14 @@
-import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query } from 'firebase/firestore';
-import { db } from '@/core/firebase/firebase.client';
+import { useCostsContext } from '@/shared/context/CostsContext';
+import { useTollsContext } from '@/shared/context/TollsContext';
 
 export const useCostMatrix = () => {
-    const [data, setData] = useState<any>({
-        tariffs: [],
-        tolls: [],
-        fuel: null,
-        loading: true
-    });
+    const { tariffs, fuel, loading: costsLoading } = useCostsContext();
+    const { tolls, loading: tollsLoading } = useTollsContext();
 
-    useEffect(() => {
-        const qTariffs = query(collection(db, 'service_tariffs'));
-        const qTolls = query(collection(db, 'tolls_matrix'));
-        const qFuel = query(collection(db, 'fuel_prices'));
-
-        const unsubTariffs = onSnapshot(qTariffs, (snap) => {
-            const items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setData((prev: any) => ({ ...prev, tariffs: items }));
-        });
-
-        const unsubTolls = onSnapshot(qTolls, (snap) => {
-            const items = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setData((prev: any) => ({ ...prev, tolls: items }));
-        });
-
-        const unsubFuel = onSnapshot(qFuel, (snap) => {
-            const fuelData = snap.docs[0]?.data();
-            setData((prev: any) => ({ ...prev, fuel: fuelData, loading: false }));
-        });
-
-        return () => {
-            unsubTariffs();
-            unsubTolls();
-            unsubFuel();
-        };
-    }, []);
-
-    return data;
+    return {
+        tariffs,
+        tolls,
+        fuel,
+        loading: costsLoading || tollsLoading
+    };
 };

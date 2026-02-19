@@ -18,6 +18,7 @@ export interface Toll {
 interface TollsContextType {
     tolls: Toll[];
     loading: boolean;
+    refreshTolls: () => Promise<void>;
 }
 
 const TollsContext = createContext<TollsContextType | undefined>(undefined);
@@ -26,10 +27,9 @@ export const TollsProvider = ({ children }: { children: ReactNode }) => {
     const [tolls, setTolls] = useState<Toll[]>([]);
     const [loading, setLoading] = useState(true);
     const [isLoaded, setIsLoaded] = useState(false);
-
     const fetchTolls = useCallback(async () => {
-        if (isLoaded) return;
-        console.log("🛣️ [TollsContext] Cargando matriz de peajes en RAM...");
+
+        console.log("🛣️ [TollsContext] Cargando matriz de peajes...");
 
         setLoading(true);
         try {
@@ -47,14 +47,16 @@ export const TollsProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    }, [isLoaded]);
+    }, []);
 
     useEffect(() => {
-        fetchTolls();
-    }, [fetchTolls]);
+        if (!isLoaded) {
+            fetchTolls();
+        }
+    }, [isLoaded, fetchTolls]);
 
     return (
-        <TollsContext.Provider value={{ tolls, loading }}>
+        <TollsContext.Provider value={{ tolls, loading, refreshTolls: fetchTolls }}>
             {children}
         </TollsContext.Provider>
     );

@@ -2,10 +2,15 @@ import { useState } from 'react';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
+import { useCostsContext } from '@/shared/context/CostsContext';
+import { useTollsContext } from '@/shared/context/TollsContext';
 
 export const useUpdateCost = () => {
     const { user } = useAuthStore();
     const [isUpdating, setIsUpdating] = useState(false);
+
+    const { refreshCosts } = useCostsContext();
+    const { refreshTolls } = useTollsContext();
 
     const updateCostDocument = async (collectionName: string, docId: string, newData: any) => {
         if (user?.role !== 'admin') {
@@ -18,7 +23,14 @@ export const useUpdateCost = () => {
         try {
             const docRef = doc(db, collectionName, docId);
             await updateDoc(docRef, newData);
-            console.log(`✅ ${collectionName}/${docId} actualizado correctamente.`);
+            console.log(`✅ ${collectionName}/${docId} actualizado en Firebase.`);
+
+            if (collectionName === 'tolls_matrix') {
+                await refreshTolls();
+            } else {
+                await refreshCosts();
+            }
+
             return true;
         } catch (error) {
             console.error("Error actualizando documento:", error);

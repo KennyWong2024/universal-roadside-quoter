@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
-import { useAirportRates } from './useAirportRates';
+import { useCostsContext } from '@/shared/context/CostsContext';
 
 export const useAirportRatesManager = () => {
     const [isSaving, setIsSaving] = useState(false);
-    const { refresh } = useAirportRates();
+
+    const { refreshCosts } = useCostsContext();
 
     const saveRate = async (rateData: any) => {
         setIsSaving(true);
@@ -16,7 +17,7 @@ export const useAirportRatesManager = () => {
                 rateData.location.district,
                 rateData.airport_id,
                 'costa rica'
-            ].map(k => k.toLowerCase());
+            ].map((k: string) => k.toLowerCase());
 
             const payload = { ...rateData, search_keywords: keywords };
 
@@ -26,8 +27,7 @@ export const useAirportRatesManager = () => {
             } else {
                 await addDoc(collection(db, 'airport_taxi_rates'), payload);
             }
-
-            await refresh();
+            await refreshCosts();
             return true;
         } catch (error) {
             console.error("Error guardando tarifa:", error);
@@ -41,7 +41,7 @@ export const useAirportRatesManager = () => {
         setIsSaving(true);
         try {
             await deleteDoc(doc(db, 'airport_taxi_rates', id));
-            await refresh();
+            await refreshCosts();
             return true;
         } catch (error) {
             console.error("Error eliminando tarifa:", error);
