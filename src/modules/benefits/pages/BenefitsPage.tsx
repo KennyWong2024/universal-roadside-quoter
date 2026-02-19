@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { HeartHandshake, Truck, Car, Plane, Home, Plus, Search, Fuel } from 'lucide-react';
-import { useBenefitsMatrix, type Benefit } from '../hooks/useBenefitsMatrix';
+import { useBenefitsMatrix } from '../hooks/useBenefitsMatrix';
+import type { Benefit } from '@/shared/types/benefits.types';
 import { useBenefitsManagement } from '../hooks/useBenefitsManagement';
 import { BenefitsTable } from '../components/BenefitsTable';
 import { BenefitFormModal } from '../components/BenefitFormModal';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { FuelBenefitsTable } from '../components/FuelBenefitsTable';
-import { BenefitsProvider } from '../../../shared/context/BenefitsContext';
 
 type TabType = 'fuel' | 'towing' | 'heavy' | 'airport' | 'taxi' | 'home';
 
-const BenefitsPageContent = () => {
+// 1. Ahora este es el componente principal que se exporta directamente
+export const BenefitsPage = () => {
     const [activeTab, setActiveTab] = useState<TabType>('fuel');
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,6 +20,7 @@ const BenefitsPageContent = () => {
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
 
+    // Estos hooks ahora buscarán el "BenefitsProvider" que pusimos en el App.tsx
     const { benefits, loading } = useBenefitsMatrix();
     const { saveBenefit, deleteBenefit } = useBenefitsManagement();
 
@@ -72,7 +74,7 @@ const BenefitsPageContent = () => {
                         <input
                             type="text"
                             placeholder="Buscar socio o plan..."
-                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all w-64 shadow-sm"
+                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all w-64 shadow-sm text-slate-800 dark:text-white"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
@@ -139,11 +141,3 @@ const TabButton = ({ active, onClick, icon, label }: any) => (
         <span>{label}</span>
     </button>
 );
-
-export const BenefitsPage = () => {
-    return (
-        <BenefitsProvider>
-            <BenefitsPageContent />
-        </BenefitsProvider>
-    );
-};

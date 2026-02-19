@@ -1,7 +1,8 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
-import { LogOut, Calculator, FileText, Table2, Sun, Moon, Users } from 'lucide-react';
+import { LogOut, Calculator, FileText, Table2, Sun, Moon, Users, Activity } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
+
 
 export const DashboardLayout = () => {
     const { user, signOut } = useAuthStore();
@@ -25,6 +26,11 @@ export const DashboardLayout = () => {
                     <NavItem to="/matriz-beneficios" icon={<Table2 size={20} />} label="Matriz Beneficios" />
                     {(user?.role === 'admin' || user?.is_dev) && (
                         <NavItem to="/usuarios" icon={<Users size={20} />} label="Usuarios" />
+                    )}
+                    {user?.is_dev && (
+                        <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-4">
+                            <NavItem to="/monitoreo" icon={<Activity size={20} />} label="Dev Panel" />
+                        </div>
                     )}
                 </nav>
 

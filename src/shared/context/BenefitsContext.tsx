@@ -2,7 +2,8 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import type { ReactNode } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
-import { type Benefit } from '../../modules/benefits/hooks/useBenefitsMatrix';
+import type { Benefit } from '@/shared/types/benefits.types';
+import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore';
 
 interface BenefitsContextType {
     benefits: Benefit[];
@@ -22,6 +23,8 @@ export const BenefitsProvider = ({ children }: { children: ReactNode }) => {
         console.log("🔥 [BenefitsContext] Leyendo de Firebase...");
 
         try {
+            useDevMonitorStore.getState().trackRead('BenefitsContext', 1);
+
             const q = query(collection(db, 'benefits_matrix'), orderBy('partner_name'));
             const querySnapshot = await getDocs(q);
 

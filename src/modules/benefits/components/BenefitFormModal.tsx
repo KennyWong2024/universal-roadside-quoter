@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, ShieldCheck, Plane, Fuel, Gauge, Car, MapPin } from 'lucide-react';
-import { type Benefit } from '../hooks/useBenefitsMatrix';
+import type { Benefit } from '@/shared/types/benefits.types';
 
 interface BenefitFormModalProps {
     isOpen: boolean;

@@ -1,48 +1,27 @@
-import { useEffect, useState } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '@/core/firebase/firebase.client';
+import { useEffect, useRef } from 'react';
+import { useBenefitsContext } from '@/shared/context/BenefitsContext';
+import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore';
+import type { Benefit } from '@/shared/types/benefits.types';
 
-export interface Benefit {
-    id: string;
-    partner_id: string;
-    partner_name: string;
-    plan_name: string;
-    service_category: string;
-    benefit_type: 'monetary_cap' | 'distance_cap' | 'full_coverage';
-    limit_value: number;
-    currency: string | null;
-    apply_airport_fee?: boolean;
-}
+export type { Benefit };
 
 export const useBenefits = (category: string) => {
-    const [benefits, setBenefits] = useState<Benefit[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { benefits: allBenefits, loading } = useBenefitsContext();
+
+    const hasLoggedCache = useRef(false);
+
+    const benefits = allBenefits
+        .filter(b => b.service_category === category)
+        .sort((a, b) => a.plan_name.localeCompare(b.plan_name));
 
     useEffect(() => {
-        const fetchBenefits = async () => {
-            try {
-                const q = query(
-                    collection(db, 'benefits_matrix'),
-                    where('service_category', '==', category)
-                );
-
-                const querySnapshot = await getDocs(q);
-                const data: Benefit[] = [];
-
-                querySnapshot.forEach((doc) => {
-                    data.push({ id: doc.id, ...doc.data() } as Benefit);
-                });
-
-                setBenefits(data.sort((a, b) => a.plan_name.localeCompare(b.plan_name)));
-            } catch (error) {
-                console.error("Error fetching benefits:", error);
-            } finally {
-                setLoading(false);
+        if (!loading && !hasLoggedCache.current) {
+            if (allBenefits.length > 0) {
+                useDevMonitorStore.getState().trackCache(`useBenefits (${category} - RAM Hit)`);
+                hasLoggedCache.current = true;
             }
-        };
-
-        fetchBenefits();
-    }, [category]);
+        }
+    }, [loading, allBenefits.length, category]);
 
     return { benefits, loading };
 };

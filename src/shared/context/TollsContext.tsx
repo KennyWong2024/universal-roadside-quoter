@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
+import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore';
 
 export interface Toll {
     id: string;
@@ -27,12 +28,13 @@ export const TollsProvider = ({ children }: { children: ReactNode }) => {
     const [tolls, setTolls] = useState<Toll[]>([]);
     const [loading, setLoading] = useState(true);
     const [isLoaded, setIsLoaded] = useState(false);
+
     const fetchTolls = useCallback(async () => {
-
         console.log("🛣️ [TollsContext] Cargando matriz de peajes...");
-
         setLoading(true);
         try {
+            useDevMonitorStore.getState().trackRead('TollsContext', 1);
+
             const q = query(collection(db, 'tolls_matrix'));
             const querySnapshot = await getDocs(q);
             const data: Toll[] = querySnapshot.docs.map(doc => ({

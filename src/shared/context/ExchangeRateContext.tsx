@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
+import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore';
 
 interface ExchangeRateContextType {
     rate: number;
@@ -21,6 +22,7 @@ export const ExchangeRateProvider = ({ children }: { children: ReactNode }) => {
 
         try {
             const docRef = doc(db, 'exchange_rates', 'crc_usd');
+            useDevMonitorStore.getState().trackRead('ExchangeRateContext', 1);
             const docSnap = await getDoc(docRef);
 
             const today = new Date().toISOString().split('T')[0];
@@ -38,11 +40,14 @@ export const ExchangeRateProvider = ({ children }: { children: ReactNode }) => {
             }
 
             if (!needsUpdate) {
+                useDevMonitorStore.getState().trackCache('ExchangeRateContext (Fecha al día)');
                 console.log("✅ [ExchangeRate] El tipo de cambio está actualizado en la DB.");
                 setRate(currentDbValue);
             } else {
                 console.warn("⚠️ [ExchangeRate] El dato es viejo o no existe. Intentando Hacienda...");
                 try {
+                    useDevMonitorStore.getState().trackApi('Hacienda API');
+
                     const response = await fetch('https://api.hacienda.go.cr/indicadores/tc/dolar');
                     if (!response.ok) throw new Error('Hacienda no responde');
 
@@ -55,14 +60,16 @@ export const ExchangeRateProvider = ({ children }: { children: ReactNode }) => {
                         source: 'Hacienda API'
                     });
 
-                    console.log("🚀 [ExchangeRate] ¡DB Actualizada con éxito para todo el equipo!");
+                    console.log("🚀 [ExchangeRate] ¡DB Actualizada con éxito!");
                     setRate(newVal);
                 } catch (apiError) {
+                    useDevMonitorStore.getState().logError('ExchangeRateContext (API Hacienda)', apiError);
                     console.error("❌ [ExchangeRate] Hacienda falló. Usando último valor de la DB.", apiError);
                     setRate(currentDbValue);
                 }
             }
         } catch (error) {
+            useDevMonitorStore.getState().logError('ExchangeRateContext (Crítico)', error);
             console.error("❌ [ExchangeRate] Error crítico en el guardián:", error);
             setRate(FALLBACK_RATE);
         } finally {

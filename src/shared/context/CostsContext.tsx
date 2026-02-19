@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
+import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore';
 
 export interface TaxiRate {
     id: string;
@@ -40,6 +41,8 @@ export const CostsProvider = ({ children }: { children: ReactNode }) => {
         console.log("💰 [CostsContext] Descargando matrices de costos a la RAM...");
 
         try {
+            useDevMonitorStore.getState().trackRead('CostsContext', 3);
+
             const [tariffsSnap, fuelSnap, airportSnap] = await Promise.all([
                 getDocs(collection(db, 'service_tariffs')),
                 getDocs(collection(db, 'fuel_prices')),

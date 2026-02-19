@@ -1,5 +1,5 @@
 import { Shield, TrendingUp, Map, Pencil, Trash2, Plane } from 'lucide-react';
-import { type Benefit } from '../hooks/useBenefitsMatrix';
+import type { Benefit } from '@/shared/types/benefits.types';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
 
 interface BenefitsTableProps {

@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
+import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore'; // <-- 1. Importar
 
 export interface UserSystem {
-    id: string; // Este es el correo
+    id: string;
     name: string;
     role: 'admin' | 'user';
     active: boolean;
@@ -15,12 +16,13 @@ export interface UserSystem {
 
 export const useUsers = () => {
     const { user: currentUser } = useAuthStore();
-
     const [users, setUsers] = useState<UserSystem[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const unsub = onSnapshot(collection(db, 'allowed_users'), (snap) => {
+            useDevMonitorStore.getState().trackRead('useUsers (Snapshot)', snap.size);
+
             const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as UserSystem));
             setUsers(list);
             setLoading(false);
@@ -45,11 +47,13 @@ export const useUsers = () => {
             payload.createdBy = currentUser?.email || 'Sistema';
         }
 
+        useDevMonitorStore.getState().trackWrite('useUsers (Save)');
         await setDoc(userRef, payload, { merge: true });
     };
 
     const deleteUser = async (id: string) => {
         if (window.confirm(`¿Estás seguro de eliminar el acceso a ${id}? Esta acción es irreversible.`)) {
+            useDevMonitorStore.getState().trackWrite('useUsers (Delete)');
             await deleteDoc(doc(db, 'allowed_users', id));
         }
     };

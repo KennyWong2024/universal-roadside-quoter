@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Shield, Pencil, Trash2, Car, Gauge, MapPin, Zap, Droplets, Fuel, Copy, Check } from 'lucide-react';
-import { type Benefit } from '../hooks/useBenefitsMatrix';
+import type { Benefit } from '@/shared/types/benefits.types';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { useCostMatrix } from '@/modules/costs/hooks/useCostMatrix';
 
@@ -14,21 +14,14 @@ export const FuelBenefitsTable = ({ data, onEdit, onDelete }: FuelBenefitsTableP
     const { user } = useAuthStore();
     const isAdmin = user?.role === 'admin';
     const { fuel } = useCostMatrix();
-
-    // Estado para controlar qué botón específico mostró "Copiado"
-    // Formato del ID: "benefitId-fuelType" (ej: "xyz123-super")
     const [copiedId, setCopiedId] = useState<string | null>(null);
 
     const handleCopy = (amount: number, id: string) => {
-        // Copiamos el número entero plano (ej: 4770)
         navigator.clipboard.writeText(Math.round(amount).toString());
         setCopiedId(id);
-
-        // Efecto de desvanecimiento a los 2 segundos
-        setTimeout(() => setCopiedId(null), 2000);
+        setTimeout(() => setCopiedId(null), 6000);
     };
 
-    // Helpers de estilo y texto
     const formatMeta = (val: string | undefined, type: 'cc' | 'vehicle' | 'zone') => {
         if (!val || val === 'all') {
             switch (type) {
