@@ -1,23 +1,39 @@
 import { useState } from 'react';
-import { doc, setDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
-import { type Benefit } from './useBenefitsMatrix';
 
 export const useBenefitsManagement = () => {
     const [isSaving, setIsSaving] = useState(false);
 
-    const saveBenefit = async (benefit: Omit<Benefit, 'id'>) => {
+    // Recibimos 'benefit' como any para flexibilidad, pero esperamos la estructura correcta
+    const saveBenefit = async (benefit: any) => {
         setIsSaving(true);
         try {
-            const clean = (str: string) => str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_');
+            // 1. Preparamos los datos limpios (sin el campo ID dentro del objeto data)
+            const { id, ...dataToSave } = benefit;
 
-            const generatedId = `${clean(benefit.partner_name)}_${benefit.service_category}_${clean(benefit.plan_name)}`;
-            const docRef = doc(db, 'benefits_matrix', generatedId);
+            // 2. Normalizamos el Partner ID para búsquedas internas (opcional pero recomendado)
+            const cleanPartnerId = benefit.partner_name
+                .toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, '_')
+                .replace(/[^\w]/g, '');
 
-            await setDoc(docRef, {
-                ...benefit,
-                partner_id: clean(benefit.partner_name)
-            }, { merge: true });
+            const finalPayload = {
+                ...dataToSave,
+                partner_id: cleanPartnerId // Mantenemos esto para filtrar fácil, pero no es el ID del documento
+            };
+
+            // 3. LÓGICA SIMPLIFICADA
+            if (id) {
+                // A) MODO EDICIÓN: Si ya tiene ID, actualizamos ese documento exacto.
+                // No importa si cambiaste el nombre, el ID es inmutable.
+                const docRef = doc(db, 'benefits_matrix', id);
+                await updateDoc(docRef, finalPayload);
+            } else {
+                // B) MODO CREACIÓN: Dejamos que Firebase invente un ID único.
+                await addDoc(collection(db, 'benefits_matrix'), finalPayload);
+            }
 
             return true;
         } catch (error) {

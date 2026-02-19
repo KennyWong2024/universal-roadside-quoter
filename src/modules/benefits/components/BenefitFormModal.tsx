@@ -18,41 +18,46 @@ export const BenefitFormModal = ({ isOpen, onClose, onSave, initialData, default
     const [benefitType, setBenefitType] = useState<'monetary_cap' | 'distance_cap'>('monetary_cap');
     const [limitValue, setLimitValue] = useState<string>('');
     const [currency, setCurrency] = useState<'CRC' | 'USD'>('CRC');
-
     const [applyAirportFee, setApplyAirportFee] = useState(true);
 
     useEffect(() => {
         if (initialData) {
-            setPartnerName(initialData.partner_name);
-            setPlanName(initialData.plan_name);
-            setServiceCategory(initialData.service_category);
-            setBenefitType(initialData.benefit_type);
-            setLimitValue(initialData.limit_value.toString());
-            setCurrency(initialData.currency || 'CRC');
-
+            setPartnerName(initialData.partner_name || '');
+            setPlanName(initialData.plan_name || '');
+            setServiceCategory(initialData.service_category || defaultCategory);
+            setBenefitType(initialData.benefit_type || 'monetary_cap');
+            // Corrección: Manejo seguro de undefined
+            setLimitValue(initialData.limit_value !== undefined ? initialData.limit_value.toString() : '');
+            setCurrency((initialData.currency as 'CRC' | 'USD') || 'CRC');
             setApplyAirportFee(initialData.apply_airport_fee !== false);
         } else {
-            setPartnerName('');
-            setPlanName('');
-            setServiceCategory(defaultCategory);
-            setBenefitType('monetary_cap');
-            setLimitValue('');
-            setCurrency('CRC');
-            setApplyAirportFee(true);
+            resetForm();
         }
     }, [initialData, isOpen, defaultCategory]);
+
+    const resetForm = () => {
+        setPartnerName('');
+        setPlanName('');
+        setServiceCategory(defaultCategory);
+        setBenefitType('monetary_cap');
+        setLimitValue('');
+        setCurrency('CRC');
+        setApplyAirportFee(true);
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const payload: any = {
+            // CRUCIAL: Pasamos el ID si existe para que el hook sepa actualizar
+            id: initialData?.id,
             partner_name: partnerName,
             plan_name: planName,
             service_category: serviceCategory,
             benefit_type: benefitType,
             limit_value: Number(limitValue),
             currency: benefitType === 'monetary_cap' ? currency : null,
-            active: true
+            // Eliminamos 'active' como pediste
         };
 
         if (serviceCategory === 'airport') {
@@ -87,7 +92,6 @@ export const BenefitFormModal = ({ isOpen, onClose, onSave, initialData, default
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-[10px] font-bold uppercase text-slate-400">Socio (Aseguradora)</label>
@@ -131,7 +135,6 @@ export const BenefitFormModal = ({ isOpen, onClose, onSave, initialData, default
                                                     <p className="text-[10px] text-slate-500">¿Aplica recargo x1.34?</p>
                                                 </div>
                                             </div>
-
                                             <button
                                                 type="button"
                                                 onClick={() => setApplyAirportFee(!applyAirportFee)}
