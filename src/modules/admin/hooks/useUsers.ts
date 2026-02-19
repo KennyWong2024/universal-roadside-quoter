@@ -1,34 +1,23 @@
-import { useState, useEffect } from 'react';
-import { collection, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { useEffect, useRef } from 'react';
+import { doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
-import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore'; // <-- 1. Importar
+import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore';
+import { useUsersContext, type UserSystem } from '@/shared/context/UsersContext';
 
-export interface UserSystem {
-    id: string;
-    name: string;
-    role: 'admin' | 'user';
-    active: boolean;
-    is_dev?: boolean;
-    createdBy?: string;
-    createdAt?: any;
-}
+export type { UserSystem };
 
 export const useUsers = () => {
     const { user: currentUser } = useAuthStore();
-    const [users, setUsers] = useState<UserSystem[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { users, loading, hasMore, loadMore, mutateLocalUsers } = useUsersContext();
+    const hasLoggedCache = useRef(false);
 
     useEffect(() => {
-        const unsub = onSnapshot(collection(db, 'allowed_users'), (snap) => {
-            useDevMonitorStore.getState().trackRead('useUsers (Snapshot)', snap.size);
-
-            const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as UserSystem));
-            setUsers(list);
-            setLoading(false);
-        });
-        return () => unsub();
-    }, []);
+        if (!loading && !hasLoggedCache.current && users.length > 0) {
+            useDevMonitorStore.getState().trackCache('useUsers (RAM Hit)');
+            hasLoggedCache.current = true;
+        }
+    }, [loading, users.length]);
 
     const saveUser = async (user: UserSystem) => {
         const userId = user.id.toLowerCase().trim();
@@ -49,14 +38,18 @@ export const useUsers = () => {
 
         useDevMonitorStore.getState().trackWrite('useUsers (Save)');
         await setDoc(userRef, payload, { merge: true });
+
+        mutateLocalUsers('save', { id: userId, ...payload });
     };
 
     const deleteUser = async (id: string) => {
         if (window.confirm(`¿Estás seguro de eliminar el acceso a ${id}? Esta acción es irreversible.`)) {
             useDevMonitorStore.getState().trackWrite('useUsers (Delete)');
             await deleteDoc(doc(db, 'allowed_users', id));
+
+            mutateLocalUsers('delete', id);
         }
     };
 
-    return { users, loading, saveUser, deleteUser };
+    return { users, loading, hasMore, loadMore, saveUser, deleteUser };
 };

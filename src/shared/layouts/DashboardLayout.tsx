@@ -19,6 +19,7 @@ export const DashboardLayout = () => {
                     <span className="hidden lg:block ml-3 font-bold text-slate-800 dark:text-white select-none">Roadside</span>
                 </div>
 
+                {/* MENÚ DE NAVEGACIÓN PRINCIPAL */}
                 <nav className="flex-1 py-8 flex flex-col gap-2 px-2 lg:px-4">
                     <NavItem to="/cotizador" icon={<Calculator size={20} />} label="Cotizador" />
                     <NavItem to="/notas" icon={<FileText size={20} />} label="Notas" />
@@ -27,18 +28,22 @@ export const DashboardLayout = () => {
                     {(user?.role === 'admin' || user?.is_dev) && (
                         <NavItem to="/usuarios" icon={<Users size={20} />} label="Usuarios" />
                     )}
-                    {user?.is_dev && (
-                        <div className="mt-8 border-t border-slate-200 dark:border-slate-800 pt-4">
-                            <NavItem to="/monitoreo" icon={<Activity size={20} />} label="Dev Panel" />
-                        </div>
-                    )}
                 </nav>
 
-                <div className="p-4 border-t border-slate-200 dark:border-slate-800">
+                {/* ZONA INFERIOR: DEV Y PERFIL */}
+                <div className="p-4 space-y-4 border-t border-slate-200 dark:border-slate-800">
+
+                    {user?.is_dev && (
+                        <NavItem
+                            to="/monitoreo"
+                            icon={<Activity size={20} />}
+                            label="Dev Panel"
+                        />
+                    )}
+
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-100 dark:bg-slate-800/50">
                         <div className="hidden lg:block overflow-hidden flex-1">
                             <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{user?.displayName?.split(' ')[0]}</p>
-
                             {user?.is_dev ? (
                                 <p className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 tracking-widest uppercase truncate animate-pulse">
                                     &lt;Dev /&gt;
