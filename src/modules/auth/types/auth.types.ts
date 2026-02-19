@@ -4,6 +4,7 @@ export interface UserProfile {
     displayName: string;
     photoURL?: string;
     role: 'admin' | 'viewer';
+    is_dev?: boolean;
 }
 
 export interface AuthState {

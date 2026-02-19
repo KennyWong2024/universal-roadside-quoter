@@ -37,6 +37,7 @@ export const AuthService = {
                 displayName: user.displayName || userData.name,
                 photoURL: user.photoURL || "",
                 role: userData.role,
+                is_dev: userData.is_dev || false,
             };
 
         } catch (error: any) {

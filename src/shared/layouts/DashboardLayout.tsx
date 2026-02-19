@@ -23,7 +23,7 @@ export const DashboardLayout = () => {
                     <NavItem to="/notas" icon={<FileText size={20} />} label="Notas" />
                     <NavItem to="/matriz-costos" icon={<Table2 size={20} />} label="Matriz Costos" />
                     <NavItem to="/matriz-beneficios" icon={<Table2 size={20} />} label="Matriz Beneficios" />
-                    {user?.role === 'admin' && (
+                    {(user?.role === 'admin' || user?.is_dev) && (
                         <NavItem to="/usuarios" icon={<Users size={20} />} label="Usuarios" />
                     )}
                 </nav>
@@ -32,7 +32,14 @@ export const DashboardLayout = () => {
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-100 dark:bg-slate-800/50">
                         <div className="hidden lg:block overflow-hidden flex-1">
                             <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{user?.displayName?.split(' ')[0]}</p>
-                            <p className="text-[10px] text-slate-500 truncate capitalize">{user?.role}</p>
+
+                            {user?.is_dev ? (
+                                <p className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 tracking-widest uppercase truncate animate-pulse">
+                                    &lt;Dev /&gt;
+                                </p>
+                            ) : (
+                                <p className="text-[10px] text-slate-500 truncate capitalize">{user?.role}</p>
+                            )}
                         </div>
                         <button onClick={toggleTheme} className="p-1.5 text-slate-400 hover:text-yellow-500 rounded-lg">
                             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}

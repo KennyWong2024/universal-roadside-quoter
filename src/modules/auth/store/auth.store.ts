@@ -47,6 +47,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
                         displayName: firebaseUser.displayName || userData.name,
                         photoURL: firebaseUser.photoURL || "",
                         role: userData.role,
+                        is_dev: userData.is_dev || false
                     };
 
                     set({ user: userProfile, status: 'authenticated' });
