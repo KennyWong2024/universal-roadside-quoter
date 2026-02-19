@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { HeartHandshake, Truck, Car, Plane, Home, Plus, Search } from 'lucide-react';
+import { HeartHandshake, Truck, Car, Plane, Home, Plus, Search, Fuel } from 'lucide-react';
 import { useBenefitsMatrix, type Benefit } from '../hooks/useBenefitsMatrix';
 import { useBenefitsManagement } from '../hooks/useBenefitsManagement';
 import { BenefitsTable } from '../components/BenefitsTable';
+import { FuelBenefitsTable } from '../components/FuelBenefitsTable';
 import { BenefitFormModal } from '../components/BenefitFormModal';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
 
+type TabType = 'fuel' | 'towing' | 'heavy' | 'airport' | 'taxi' | 'home';
+
 export const BenefitsPage = () => {
-    const [activeTab, setActiveTab] = useState<'towing' | 'heavy' | 'airport' | 'taxi' | 'home'>('towing');
+    const [activeTab, setActiveTab] = useState<TabType>('fuel');
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
@@ -33,6 +36,18 @@ export const BenefitsPage = () => {
     const handleNew = () => {
         setSelectedBenefit(null);
         setIsModalOpen(true);
+    };
+
+    const getCategoryLabel = (tab: TabType) => {
+        switch (tab) {
+            case 'fuel': return 'Envío de Combustible';
+            case 'towing': return 'Grúa Liviana';
+            case 'heavy': return 'Grúa Pesada';
+            case 'airport': return 'Taxi Aeropuerto';
+            case 'taxi': return 'Taxi por Avería';
+            case 'home': return 'Asistencia Hogar';
+            default: return 'General';
+        }
     };
 
     if (loading) return <div className="p-8 text-slate-500 animate-pulse text-center">Cargando beneficios...</div>;
@@ -75,6 +90,7 @@ export const BenefitsPage = () => {
             </div>
 
             <div className="flex flex-wrap gap-2">
+                <TabButton active={activeTab === 'fuel'} onClick={() => setActiveTab('fuel')} icon={<Fuel size={18} />} label="Combustible" />
                 <TabButton active={activeTab === 'towing'} onClick={() => setActiveTab('towing')} icon={<Car size={18} />} label="Grúa Liviana" />
                 <TabButton active={activeTab === 'heavy'} onClick={() => setActiveTab('heavy')} icon={<Truck size={18} />} label="Grúa Pesada" />
                 <TabButton active={activeTab === 'airport'} onClick={() => setActiveTab('airport')} icon={<Plane size={18} />} label="Taxi Aeropuerto" />
@@ -83,12 +99,20 @@ export const BenefitsPage = () => {
             </div>
 
             <div className="animate-in fade-in zoom-in-95 duration-300">
-                <BenefitsTable
-                    data={filteredBenefits}
-                    categoryLabel={`Planes de ${activeTab === 'airport' ? 'Taxi Aeropuerto' : activeTab === 'towing' ? 'Grúa Liviana' : activeTab}`}
-                    onEdit={handleEdit}
-                    onDelete={deleteBenefit}
-                />
+                {activeTab === 'fuel' ? (
+                    <FuelBenefitsTable
+                        data={filteredBenefits}
+                        onEdit={handleEdit}
+                        onDelete={deleteBenefit}
+                    />
+                ) : (
+                    <BenefitsTable
+                        data={filteredBenefits}
+                        categoryLabel={`Planes de ${getCategoryLabel(activeTab)}`}
+                        onEdit={handleEdit}
+                        onDelete={deleteBenefit}
+                    />
+                )}
             </div>
 
             <BenefitFormModal

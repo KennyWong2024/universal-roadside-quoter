@@ -4,15 +4,11 @@ import { db } from '@/core/firebase/firebase.client';
 
 export const useBenefitsManagement = () => {
     const [isSaving, setIsSaving] = useState(false);
-
-    // Recibimos 'benefit' como any para flexibilidad, pero esperamos la estructura correcta
     const saveBenefit = async (benefit: any) => {
         setIsSaving(true);
         try {
-            // 1. Preparamos los datos limpios (sin el campo ID dentro del objeto data)
             const { id, ...dataToSave } = benefit;
 
-            // 2. Normalizamos el Partner ID para búsquedas internas (opcional pero recomendado)
             const cleanPartnerId = benefit.partner_name
                 .toLowerCase()
                 .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
@@ -21,17 +17,13 @@ export const useBenefitsManagement = () => {
 
             const finalPayload = {
                 ...dataToSave,
-                partner_id: cleanPartnerId // Mantenemos esto para filtrar fácil, pero no es el ID del documento
+                partner_id: cleanPartnerId
             };
 
-            // 3. LÓGICA SIMPLIFICADA
             if (id) {
-                // A) MODO EDICIÓN: Si ya tiene ID, actualizamos ese documento exacto.
-                // No importa si cambiaste el nombre, el ID es inmutable.
                 const docRef = doc(db, 'benefits_matrix', id);
                 await updateDoc(docRef, finalPayload);
             } else {
-                // B) MODO CREACIÓN: Dejamos que Firebase invente un ID único.
                 await addDoc(collection(db, 'benefits_matrix'), finalPayload);
             }
 
