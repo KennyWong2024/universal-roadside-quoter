@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getAnalytics, isSupported, type Analytics } from "firebase/analytics";
+import { getPerformance } from "firebase/performance";
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -17,8 +18,8 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export let analytics: Analytics | null = null;
 
+export let analytics: Analytics | null = null;
 isSupported().then((supported) => {
     if (supported) {
         analytics = getAnalytics(app);
@@ -28,6 +29,9 @@ isSupported().then((supported) => {
     }
 });
 
+export const perf = getPerformance(app);
+
 if (import.meta.env.DEV) {
+    console.log("⚡ Firebase Performance Monitoring inicializado.");
     console.log(`🔥 Firebase conectado: ${firebaseConfig.projectId}`);
 }
