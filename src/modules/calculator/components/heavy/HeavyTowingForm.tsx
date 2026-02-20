@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { LabeledInput } from '@/shared/ui/forms/LabeledInput';
 import { SearchableSelect } from '@/shared/ui/forms/SearchableSelect';
-import { CheckboxChip } from '@/shared/ui/forms/CheckboxChip';
 import { Truck, AlertCircle } from 'lucide-react';
 import { useBenefits, type Benefit } from '@/shared/hooks/useBenefits';
 import { useTolls } from '@/shared/hooks/useTolls';
@@ -10,6 +9,7 @@ import { useHeavyQuote } from '@/modules/calculator/engine/useHeavyQuote';
 import { CostBreakdown } from '../towing/CostBreakdown';
 import { NotePreview } from '../towing/NotePreview';
 import { ClearFieldsButton } from '@/shared/ui/ClearFieldsButton';
+import { TollSelector } from '@/shared/ui/forms/TollSelector';
 
 export const HeavyTowingForm = () => {
     const { benefits, loading: loadingBenefits } = useBenefits('heavy');
@@ -112,16 +112,12 @@ export const HeavyTowingForm = () => {
                         </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {tolls.map(toll => (
-                            <CheckboxChip
-                                key={toll.id}
-                                label={`${toll.name} (₡${toll.prices.heavy || toll.prices.tow})`}
-                                isActive={selectedTolls.includes(toll.id)}
-                                onToggle={() => toggleToll(toll.id)}
-                            />
-                        ))}
-                    </div>
+                    <TollSelector
+                        tolls={tolls}
+                        selectedTolls={selectedTolls}
+                        onToggle={toggleToll}
+                        type="heavy"
+                    />
                 </section>
             </div>
 

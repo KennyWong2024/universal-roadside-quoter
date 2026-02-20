@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { LabeledInput } from '@/shared/ui/forms/LabeledInput';
 import { SearchableSelect } from '@/shared/ui/forms/SearchableSelect';
-import { CheckboxChip } from '@/shared/ui/forms/CheckboxChip';
 import { Car, Truck, AlertCircle } from 'lucide-react';
 import { useBenefits, type Benefit } from '@/shared/hooks/useBenefits';
 import { useTolls } from '@/shared/hooks/useTolls';
@@ -10,6 +9,7 @@ import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
 import { CostBreakdown } from './CostBreakdown';
 import { NotePreview } from './NotePreview';
 import { ClearFieldsButton } from '@/shared/ui/ClearFieldsButton';
+import { TollSelector } from '@/shared/ui/forms/TollSelector';
 
 export const TowingForm = () => {
     const { benefits, loading: loadingBenefits } = useBenefits('towing');
@@ -106,7 +106,7 @@ export const TowingForm = () => {
 
                 <section className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Peajes (Grúa)</h3>
+                        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Selección de Peajes</h3>
                         <span className="text-[10px] bg-blue-500/10 text-blue-500 px-2 py-1 rounded-full font-bold">
                             {selectedTolls.length} SELECCIONADOS
                         </span>
@@ -115,16 +115,12 @@ export const TowingForm = () => {
                     {loadingTolls ? (
                         <div className="text-xs text-slate-400 italic">Cargando matriz...</div>
                     ) : (
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                            {tolls.map(toll => (
-                                <CheckboxChip
-                                    key={toll.id}
-                                    label={`${toll.name} (₡${toll.prices.tow})`}
-                                    isActive={selectedTolls.includes(toll.id)}
-                                    onToggle={() => toggleToll(toll.id)}
-                                />
-                            ))}
-                        </div>
+                        <TollSelector
+                            tolls={tolls}
+                            selectedTolls={selectedTolls}
+                            onToggle={toggleToll}
+                            type="tow"
+                        />
                     )}
                 </section>
             </div>
