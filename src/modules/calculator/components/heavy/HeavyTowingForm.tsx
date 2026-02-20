@@ -10,8 +10,12 @@ import { CostBreakdown } from '../towing/CostBreakdown';
 import { NotePreview } from '../towing/NotePreview';
 import { ClearFieldsButton } from '@/shared/ui/ClearFieldsButton';
 import { TollSelector } from '@/shared/ui/forms/TollSelector';
+import { useCalculatorStore } from '@/modules/calculator/store/calculator.store';
+import { FloatingTowingNote } from '../towing/FloatingTowingNote';
 
 export const HeavyTowingForm = () => {
+    const { isFloating } = useCalculatorStore();
+
     const { benefits, loading: loadingBenefits } = useBenefits('heavy');
     const { tolls } = useTolls();
     const { rate: exchangeRate, isFallback } = useExchangeRate();
@@ -131,17 +135,32 @@ export const HeavyTowingForm = () => {
                     </div>
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                        <CostBreakdown quote={quote} isFallback={isFallback} />
-                        <NotePreview
-                            partnerName={selectedBenefit?.partner_name || ''}
-                            planName={selectedBenefit?.plan_name || '...'}
-                            ps={ps}
-                            sd={sd}
-                            maneuver={maniobra}
-                            totalKm={Number(ps) + Number(sd)}
-                            tollsList={selectedTollsNames}
-                            calculatedAmount={quote.finalTotal}
-                        />
+                        {isFloating ? (
+                            <FloatingTowingNote
+                                partnerName={selectedBenefit?.partner_name || ''}
+                                planName={selectedBenefit?.plan_name || '...'}
+                                ps={ps}
+                                sd={sd}
+                                maneuver={maniobra}
+                                totalKm={Number(ps) + Number(sd)}
+                                tollsList={selectedTollsNames}
+                                calculatedAmount={quote.finalTotal}
+                            />
+                        ) : (
+                            <>
+                                <CostBreakdown quote={quote} isFallback={isFallback} />
+                                <NotePreview
+                                    partnerName={selectedBenefit?.partner_name || ''}
+                                    planName={selectedBenefit?.plan_name || '...'}
+                                    ps={ps}
+                                    sd={sd}
+                                    maneuver={maniobra}
+                                    totalKm={Number(ps) + Number(sd)}
+                                    tollsList={selectedTollsNames}
+                                    calculatedAmount={quote.finalTotal}
+                                />
+                            </>
+                        )}
                     </div>
                 )}
             </div>

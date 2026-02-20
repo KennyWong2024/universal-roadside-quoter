@@ -6,8 +6,11 @@ import { useAirportQuote } from '../../engine/useAirportQuote';
 import { AirportCostBreakdown } from './AirportCostBreakdown';
 import { AirportNotePreview } from './AirportNotePreview';
 import { ClearFieldsButton } from '@/shared/ui/ClearFieldsButton';
+import { useCalculatorStore } from '@/modules/calculator/store/calculator.store';
+import { FloatingAirportNote } from './FloatingAirportNote';
 
 export const AirportForm = () => {
+    const { isFloating } = useCalculatorStore();
     const { rate: exchangeRate } = useExchangeRate();
 
     const {
@@ -127,14 +130,23 @@ export const AirportForm = () => {
                     </div>
                 ) : (
                     <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
-                        <AirportCostBreakdown calculation={calculation} />
-                        <AirportNotePreview
-                            selectedRoute={selectedRoute}
-                            selectedBenefit={selectedBenefit}
-                            calculation={calculation}
-                            tripType={tripType}
-                            generateNote={generateNote}
-                        />
+                        {isFloating ? (
+                            <FloatingAirportNote
+                                generateNote={generateNote}
+                                totalAmount={calculation?.grandTotal || 0}
+                            />
+                        ) : (
+                            <>
+                                <AirportCostBreakdown calculation={calculation} />
+                                <AirportNotePreview
+                                    selectedRoute={selectedRoute}
+                                    selectedBenefit={selectedBenefit}
+                                    calculation={calculation}
+                                    tripType={tripType}
+                                    generateNote={generateNote}
+                                />
+                            </>
+                        )}
                     </div>
                 )}
             </div>
