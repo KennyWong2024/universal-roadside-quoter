@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { LabeledInput } from '@/shared/ui/forms/LabeledInput';
 import { SearchableSelect } from '@/shared/ui/forms/SearchableSelect';
 import { CheckboxChip } from '@/shared/ui/forms/CheckboxChip';
-import { Car, Truck } from 'lucide-react';
+import { Car, Truck, AlertCircle } from 'lucide-react';
 import { useBenefits, type Benefit } from '@/shared/hooks/useBenefits';
 import { useTolls } from '@/shared/hooks/useTolls';
 import { useTowingQuote } from '@/modules/calculator/engine/useTowingQuote';
 import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
 import { CostBreakdown } from './CostBreakdown';
 import { NotePreview } from './NotePreview';
+import { ClearFieldsButton } from '@/shared/ui/ClearFieldsButton';
 
 export const TowingForm = () => {
     const { benefits, loading: loadingBenefits } = useBenefits('towing');
@@ -20,6 +21,14 @@ export const TowingForm = () => {
     const [sd, setSd] = useState('');
     const [maniobra, setManiobra] = useState('');
     const [selectedTolls, setSelectedTolls] = useState<string[]>([]);
+
+    const handleReset = () => {
+        setSelectedBenefit(null);
+        setPs('');
+        setSd('');
+        setManiobra('');
+        setSelectedTolls([]);
+    };
 
     const { quote } = useTowingQuote(
         Number(sd),
@@ -50,14 +59,20 @@ export const TowingForm = () => {
         .filter(t => selectedTolls.includes(t.id))
         .map(t => `${t.name} (₡${t.prices.tow})`);
 
+    const isReadyToQuote = selectedBenefit !== null;
+
     return (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             <div className="xl:col-span-2 space-y-8">
                 <section className="space-y-6">
-                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                        <Car size={20} />
-                        <h3 className="text-sm font-bold uppercase tracking-widest">Datos Grúa Liviana</h3>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                            <Car size={20} />
+                            <h3 className="text-sm font-bold uppercase tracking-widest">Datos Grúa Liviana</h3>
+                        </div>
+
+                        <ClearFieldsButton onClear={handleReset} />
                     </div>
 
                     <SearchableSelect
@@ -115,21 +130,30 @@ export const TowingForm = () => {
             </div>
 
             <div className="xl:col-span-1 space-y-6 sticky top-8 h-fit">
-                <CostBreakdown
-                    quote={quote}
-                    isFallback={isFallback}
-                />
-
-                <NotePreview
-                    partnerName={selectedBenefit?.partner_name || ''}
-                    planName={selectedBenefit?.plan_name || '...'}
-                    ps={ps}
-                    sd={sd}
-                    maneuver={maniobra}
-                    totalKm={Number(ps) + Number(sd)}
-                    tollsList={selectedTollsNames}
-                    calculatedAmount={quote.finalTotal}
-                />
+                {!isReadyToQuote ? (
+                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center space-y-4 min-h-[250px] animate-in fade-in zoom-in-95">
+                        <div className="w-12 h-12 bg-slate-200/50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 dark:text-slate-500">
+                            <AlertCircle size={24} />
+                        </div>
+                        <p className="text-sm font-bold text-slate-400 dark:text-slate-500">
+                            Completa los datos para ver el desglose
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <CostBreakdown quote={quote} isFallback={isFallback} />
+                        <NotePreview
+                            partnerName={selectedBenefit?.partner_name || ''}
+                            planName={selectedBenefit?.plan_name || '...'}
+                            ps={ps}
+                            sd={sd}
+                            maneuver={maniobra}
+                            totalKm={Number(ps) + Number(sd)}
+                            tollsList={selectedTollsNames}
+                            calculatedAmount={quote.finalTotal}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

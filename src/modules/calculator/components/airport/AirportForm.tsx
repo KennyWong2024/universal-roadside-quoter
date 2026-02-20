@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { Plane, MapPin } from 'lucide-react';
+import { Plane, MapPin, AlertCircle } from 'lucide-react';
 import { SearchableSelect } from '@/shared/ui/forms/SearchableSelect';
 import { useExchangeRate } from '@/shared/hooks/useExchangeRate';
 import { useAirportQuote } from '../../engine/useAirportQuote';
 import { AirportCostBreakdown } from './AirportCostBreakdown';
 import { AirportNotePreview } from './AirportNotePreview';
+import { ClearFieldsButton } from '@/shared/ui/ClearFieldsButton';
 
 export const AirportForm = () => {
     const { rate: exchangeRate } = useExchangeRate();
@@ -18,6 +19,12 @@ export const AirportForm = () => {
         calculation, generateNote
     } = useAirportQuote(exchangeRate);
 
+    const handleReset = () => {
+        setSelectedBenefit(null);
+        setSelectedRoute(null);
+        setTripType('one_way');
+    };
+
     const partnerOptions = useMemo(() => airportBenefits.map(b => ({
         id: b.id,
         label: `${b.partner_name} - ${b.plan_name} (${b.benefit_type === 'monetary_cap' ? `${b.currency} ${b.limit_value}` : 'KM'})`
@@ -29,14 +36,19 @@ export const AirportForm = () => {
         subLabel: `Aeropuerto: ${r.airport_id}`
     })), [rates]);
 
+    const isReadyToQuote = selectedBenefit !== null && selectedRoute !== null;
+
     return (
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
             <div className="xl:col-span-2 space-y-8">
                 <section className="space-y-6">
-                    <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400">
-                        <Plane size={20} />
-                        <h3 className="text-sm font-bold uppercase tracking-widest">Datos del Viaje</h3>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400">
+                            <Plane size={20} />
+                            <h3 className="text-sm font-bold uppercase tracking-widest">Datos del Viaje</h3>
+                        </div>
+                        <ClearFieldsButton onClear={handleReset} />
                     </div>
 
                     <SearchableSelect
@@ -106,17 +118,25 @@ export const AirportForm = () => {
             </div>
 
             <div className="xl:col-span-1 space-y-6 sticky top-8 h-fit">
-                <AirportCostBreakdown
-                    calculation={calculation}
-                />
-
-                <AirportNotePreview
-                    selectedRoute={selectedRoute}
-                    selectedBenefit={selectedBenefit}
-                    calculation={calculation}
-                    tripType={tripType}
-                    generateNote={generateNote}
-                />
+                {!isReadyToQuote ? (
+                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-8 border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center space-y-4 min-h-[250px] animate-in fade-in zoom-in-95">
+                        <div className="w-12 h-12 bg-slate-200/50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 dark:text-slate-500">
+                            <AlertCircle size={24} />
+                        </div>
+                        <p className="text-sm font-bold text-slate-400 dark:text-slate-500">Completa los datos para ver el desglose</p>
+                    </div>
+                ) : (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                        <AirportCostBreakdown calculation={calculation} />
+                        <AirportNotePreview
+                            selectedRoute={selectedRoute}
+                            selectedBenefit={selectedBenefit}
+                            calculation={calculation}
+                            tripType={tripType}
+                            generateNote={generateNote}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
