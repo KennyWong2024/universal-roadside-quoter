@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ExternalLink } from 'lucide-react';
 
@@ -10,6 +10,7 @@ interface PiPWindowProps {
 
 export const PiPWindow = ({ children, onClose, title = "Cotizador Flotante" }: PiPWindowProps) => {
     const [pipWindow, setPipWindow] = useState<Window | null>(null);
+    const pipRef = useRef<Window | null>(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -27,7 +28,10 @@ export const PiPWindow = ({ children, onClose, title = "Cotizador Flotante" }: P
                     height: 750,
                 });
 
-                if (!isMounted) return;
+                if (!isMounted) {
+                    pip.close();
+                    return;
+                }
 
                 Array.from(document.head.querySelectorAll('style, link[rel="stylesheet"]')).forEach((node) => {
                     pip.document.head.appendChild(node.cloneNode(true));
@@ -42,10 +46,13 @@ export const PiPWindow = ({ children, onClose, title = "Cotizador Flotante" }: P
 
                 pip.addEventListener('pagehide', () => {
                     setPipWindow(null);
+                    pipRef.current = null;
                     onClose();
                 });
 
                 setPipWindow(pip);
+                pipRef.current = pip;
+
             } catch (error) {
                 console.error("Error abriendo ventana flotante:", error);
                 onClose();
@@ -56,7 +63,9 @@ export const PiPWindow = ({ children, onClose, title = "Cotizador Flotante" }: P
 
         return () => {
             isMounted = false;
-            if (pipWindow) pipWindow.close();
+            if (pipRef.current) {
+                pipRef.current.close();
+            }
         };
     }, []);
 

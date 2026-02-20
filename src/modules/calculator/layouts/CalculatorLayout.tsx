@@ -1,16 +1,12 @@
-import { useState } from 'react';
 import { useCalculatorStore } from '../store/calculator.store';
 import { Car, Plane, Home, Truck, PictureInPicture2 } from 'lucide-react';
 import { GlassCard } from '@/shared/ui/GlassCard';
 import { TowingForm } from '../components/towing/TowingForm';
 import { HeavyTowingForm } from '../components/heavy/HeavyTowingForm';
 import { AirportForm } from '../components/airport/AirportForm';
-import { PiPWindow } from '@/shared/ui/PiPWindow';
-import { FloatingCalculator } from './FloatingCalculator';
 
 export const CalculatorLayout = () => {
-    const { activeTab, setActiveTab } = useCalculatorStore();
-    const [isFloating, setIsFloating] = useState(false);
+    const { activeTab, setActiveTab, isFloating, setIsFloating } = useCalculatorStore();
 
     const renderActiveForm = () => (
         <div className="w-full">
@@ -28,7 +24,6 @@ export const CalculatorLayout = () => {
 
     return (
         <div className="max-w-7xl mx-auto space-y-6">
-
             <div className="flex flex-col xl:flex-row items-center justify-between gap-6">
                 <div className="text-center xl:text-left">
                     <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">
@@ -61,27 +56,21 @@ export const CalculatorLayout = () => {
             </div>
 
             {isFloating ? (
-                <>
-                    <PiPWindow onClose={() => setIsFloating(false)}>
-                        <FloatingCalculator onClose={() => setIsFloating(false)} />
-                    </PiPWindow>
-
-                    <GlassCard className="min-h-[400px] flex flex-col items-center justify-center text-center p-10 border-dashed border-2 border-slate-200 dark:border-slate-800 bg-transparent">
-                        <div className="p-4 bg-indigo-500/10 text-indigo-500 rounded-full mb-4 animate-bounce">
-                            <PictureInPicture2 size={32} />
-                        </div>
-                        <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300">Modo Flotante Activo</h2>
-                        <p className="text-slate-500 text-sm mt-2 max-w-xs">
-                            El cotizador se encuentra en una ventana independiente sobre tus otras aplicaciones.
-                        </p>
-                        <button
-                            onClick={() => setIsFloating(false)}
-                            className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform"
-                        >
-                            DEVOLVER AQUÍ
-                        </button>
-                    </GlassCard>
-                </>
+                <GlassCard className="min-h-[400px] flex flex-col items-center justify-center text-center p-10 border-dashed border-2 border-slate-200 dark:border-slate-800 bg-transparent">
+                    <div className="p-4 bg-indigo-500/10 text-indigo-500 rounded-full mb-4 animate-bounce">
+                        <PictureInPicture2 size={32} />
+                    </div>
+                    <h2 className="text-xl font-bold text-slate-700 dark:text-slate-300">Modo Flotante Activo</h2>
+                    <p className="text-slate-500 text-sm mt-2 max-w-xs">
+                        El cotizador se encuentra en una ventana independiente. Puedes navegar por otras secciones de la app.
+                    </p>
+                    <button
+                        onClick={() => setIsFloating(false)}
+                        className="mt-6 px-6 py-2 bg-indigo-600 text-white rounded-xl font-bold text-sm shadow-lg hover:scale-105 transition-transform"
+                    >
+                        DEVOLVER AQUÍ
+                    </button>
+                </GlassCard>
             ) : (
                 <GlassCard className="min-h-[600px] p-6 lg:p-10 border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 transition-all duration-300">
                     {renderActiveForm()}
@@ -94,12 +83,7 @@ export const CalculatorLayout = () => {
 const TabButton = ({ isActive, onClick, icon, label }: any) => (
     <button
         onClick={onClick}
-        className={`
-      flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 m-1
-      ${isActive
-                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md shadow-slate-900/5 transform scale-105'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'}
-    `}
+        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 m-1 ${isActive ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md shadow-slate-900/5 transform scale-105' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'}`}
     >
         {icon}
         <span className="hidden md:inline">{label}</span>

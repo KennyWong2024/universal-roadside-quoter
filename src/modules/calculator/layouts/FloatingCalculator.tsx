@@ -1,33 +1,21 @@
 import { useCalculatorStore } from '../store/calculator.store';
-import { Car, Plane, Home, Truck, X } from 'lucide-react';
+import { Car, Plane, Home, Truck } from 'lucide-react';
 import { TowingForm } from '../components/towing/TowingForm';
 import { HeavyTowingForm } from '../components/heavy/HeavyTowingForm';
 import { AirportForm } from '../components/airport/AirportForm';
 
-interface FloatingCalculatorProps {
-    onClose: () => void;
-}
-
-export const FloatingCalculator = ({ onClose }: FloatingCalculatorProps) => {
+export const FloatingCalculator = () => {
     const { activeTab, setActiveTab } = useCalculatorStore();
 
     return (
         <div className="flex flex-col h-screen w-full bg-[#f0f2f5] dark:bg-[#0a0e17]">
-            <header className="flex items-center justify-between px-3 py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-50 shrink-0 shadow-sm">
-                <div className="flex items-center gap-1">
+            <header className="flex items-center justify-center px-3 py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-50 shrink-0 shadow-sm">
+                <div className="flex items-center gap-2">
                     <NavButton isActive={activeTab === 'towing'} onClick={() => setActiveTab('towing')} icon={<Car size={18} />} title="Grúa Liviana" />
                     <NavButton isActive={activeTab === 'heavy'} onClick={() => setActiveTab('heavy')} icon={<Truck size={18} />} title="Grúa Pesada" />
                     <NavButton isActive={activeTab === 'taxi_airport'} onClick={() => setActiveTab('taxi_airport')} icon={<Plane size={18} />} title="Taxi Aeropuerto" />
                     <NavButton isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} icon={<Home size={18} />} title="Asistencia Hogar" />
                 </div>
-
-                <button
-                    onClick={onClose}
-                    className="p-1.5 text-slate-400 hover:text-white hover:bg-red-500 rounded-lg transition-colors"
-                    title="Cerrar ventana"
-                >
-                    <X size={18} />
-                </button>
             </header>
 
             <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 custom-scrollbar">

@@ -3,10 +3,17 @@ import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { LogOut, Calculator, FileText, Table2, Sun, Moon, Users, Activity } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
 
+// 👇 1. IMPORTAMOS NUESTRAS HERRAMIENTAS GLOBALES DE LA VENTANA
+import { useCalculatorStore } from '@/modules/calculator/store/calculator.store';
+import { PiPWindow } from '@/shared/ui/PiPWindow';
+import { FloatingCalculator } from '@/modules/calculator/layouts/FloatingCalculator';
 
 export const DashboardLayout = () => {
     const { user, signOut } = useAuthStore();
     const { theme, toggleTheme } = useTheme();
+
+    // 👇 2. ESCUCHAMOS EL ESTADO DE LA VENTANA
+    const { isFloating, setIsFloating } = useCalculatorStore();
 
     return (
         <div className="flex h-screen w-screen bg-[#f0f2f5] dark:bg-[#0a0e17] overflow-hidden transition-colors duration-500">
@@ -68,6 +75,14 @@ export const DashboardLayout = () => {
                     <Outlet />
                 </div>
             </main>
+
+            {/* 👇 3. EL GUARDIÁN GLOBAL DE LA VENTANA 👇 */}
+            {isFloating && (
+                <PiPWindow onClose={() => setIsFloating(false)}>
+                    <FloatingCalculator />
+                </PiPWindow>
+            )}
+
         </div>
     );
 };

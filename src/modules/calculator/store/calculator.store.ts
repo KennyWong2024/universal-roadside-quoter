@@ -5,6 +5,8 @@ type CalculatorType = 'towing' | 'heavy' | 'taxi_airport' | 'home';
 interface CalculatorState {
     activeTab: CalculatorType;
     setActiveTab: (tab: CalculatorType) => void;
+    isFloating: boolean;
+    setIsFloating: (isFloating: boolean) => void;
 
     towingData: {
         ps: number;
@@ -18,6 +20,9 @@ interface CalculatorState {
 export const useCalculatorStore = create<CalculatorState>((set) => ({
     activeTab: 'towing',
     setActiveTab: (tab) => set({ activeTab: tab }),
+
+    isFloating: false,
+    setIsFloating: (isFloating) => set({ isFloating }),
 
     towingData: { ps: 0, sd: 0, maneuver: 0, tolls: false },
 
