@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useCalculatorStore } from '../store/calculator.store';
 import { Car, Plane, Home, Truck, PictureInPicture2 } from 'lucide-react';
 import { GlassCard } from '@/shared/ui/GlassCard';
-import { TowingForm } from './towing/TowingForm';
-import { HeavyTowingForm } from './heavy/HeavyTowingForm';
-import { AirportForm } from './airport/AirportForm';
+import { TowingForm } from '../components/towing/TowingForm';
+import { HeavyTowingForm } from '../components/heavy/HeavyTowingForm';
+import { AirportForm } from '../components/airport/AirportForm';
 import { PiPWindow } from '@/shared/ui/PiPWindow';
+import { FloatingCalculator } from './FloatingCalculator';
 
 export const CalculatorLayout = () => {
     const { activeTab, setActiveTab } = useCalculatorStore();
@@ -62,9 +63,7 @@ export const CalculatorLayout = () => {
             {isFloating ? (
                 <>
                     <PiPWindow onClose={() => setIsFloating(false)}>
-                        <div className="p-2">
-                            {renderActiveForm()}
-                        </div>
+                        <FloatingCalculator onClose={() => setIsFloating(false)} />
                     </PiPWindow>
 
                     <GlassCard className="min-h-[400px] flex flex-col items-center justify-center text-center p-10 border-dashed border-2 border-slate-200 dark:border-slate-800 bg-transparent">

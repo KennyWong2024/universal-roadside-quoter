@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
 import { LoginScreen } from '@/modules/auth/components/LoginScreen';
 import { DashboardLayout } from '@/shared/layouts/DashboardLayout';
-import { CalculatorLayout } from '@/modules/calculator/components/CalculatorLayout';
+import { CalculatorLayout } from '@/modules/calculator/layouts/CalculatorLayout';
 import { CostsPage } from '@/modules/costs/pages/CostsPage';
 import { UserManagementPage } from '@/modules/admin/pages/UserManagementPage';
 import { BenefitsPage } from '@/modules/benefits/pages/BenefitsPage';

@@ -24,7 +24,7 @@ export const PiPWindow = ({ children, onClose, title = "Cotizador Flotante" }: P
             try {
                 const pip = await (window as any).documentPictureInPicture.requestWindow({
                     width: 450,
-                    height: 700,
+                    height: 750,
                 });
 
                 if (!isMounted) return;
@@ -37,7 +37,7 @@ export const PiPWindow = ({ children, onClose, title = "Cotizador Flotante" }: P
                     pip.document.documentElement.classList.add('dark');
                 }
 
-                pip.document.body.className = "bg-[#f0f2f5] dark:bg-[#0a0e17] overflow-y-auto p-4";
+                pip.document.body.className = "bg-[#f0f2f5] dark:bg-[#0a0e17] overflow-hidden m-0 p-0 font-sans text-slate-900 dark:text-slate-100";
                 pip.document.title = title;
 
                 pip.addEventListener('pagehide', () => {
