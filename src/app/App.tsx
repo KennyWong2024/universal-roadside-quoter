@@ -14,6 +14,7 @@ import { CostsProvider } from '@/shared/context/CostsContext';
 import { TollsProvider } from '@/shared/context/TollsContext';
 import { DevPanelPage } from '@/modules/devtools/pages/DevPanelPage';
 import { UsersProvider } from '@/shared/context/UsersContext';
+import { AnalyticsTracker } from '@/shared/analytics/AnalyticsTracker';
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <AnalyticsTracker />
       <BenefitsProvider>
         <ExchangeRateProvider>
           <TollsProvider>
