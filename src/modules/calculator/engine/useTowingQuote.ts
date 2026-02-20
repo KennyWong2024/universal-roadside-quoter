@@ -1,25 +1,7 @@
-import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/core/firebase/firebase.client';
-import { type Benefit } from '@/shared/hooks/useBenefits';
+import { useState, useEffect, useMemo } from 'react';
+import { useCostsContext } from '@/shared/context/CostsContext';
+import { type Benefit } from '@/shared/types/benefits.types';
 import { type Toll } from '@/shared/hooks/useTolls';
-
-interface TariffRule {
-    tiers: {
-        base: {
-            cost: number;
-            included_km: number;
-        };
-        extra: {
-            cost_per_km: number;
-        };
-    };
-}
-
-interface TaxRule {
-    rate: number;
-    type: string;
-}
 
 export interface QuoteResult {
     serviceSubtotal: number;
@@ -39,145 +21,73 @@ export const useTowingQuote = (
     benefit: Benefit | null,
     currentExchangeRate: number
 ) => {
+    const { tariffs, loading: loadingCosts } = useCostsContext();
+
+    const tariff = useMemo(() =>
+        tariffs.find(t => t.id === 'CR_towing_standard'),
+        [tariffs]);
+
     const [quote, setQuote] = useState<QuoteResult>({
-        serviceSubtotal: 0,
-        benefitCovered: 0,
-        clientExcedente: 0,
-        taxAmount: 0,
-        finalTotal: 0,
-        breakdown: []
+        serviceSubtotal: 0, benefitCovered: 0, clientExcedente: 0,
+        taxAmount: 0, finalTotal: 0, breakdown: []
     });
 
-    const [tariff, setTariff] = useState<TariffRule | null>(null);
-    const [taxRule, setTaxRule] = useState<TaxRule | null>(null);
-    const [rulesLoaded, setRulesLoaded] = useState(false);
-
     useEffect(() => {
-        const fetchRules = async () => {
-            try {
-                const tariffRef = doc(db, 'service_tariffs', 'CR_towing_standard');
-                const taxRef = doc(db, 'tax_configurations', 'CR_IVA_services');
-
-                const [tariffSnap, taxSnap] = await Promise.all([
-                    getDoc(tariffRef),
-                    getDoc(taxRef)
-                ]);
-
-                if (tariffSnap.exists()) {
-                    setTariff(tariffSnap.data() as TariffRule);
-                } else {
-                    console.error("❌ ERROR CRÍTICO: No se encontró la tarifa 'CR_towing_standard' en Firestore.");
-                }
-
-                if (taxSnap.exists()) {
-                    setTaxRule(taxSnap.data() as TaxRule);
-                } else {
-                    console.error("❌ ERROR CRÍTICO: No se encontró la regla fiscal 'CR_IVA_services' en Firestore.");
-                }
-
-                setRulesLoaded(true);
-
-            } catch (error) {
-                console.error("❌ Error de conexión al cargar reglas de cotización:", error);
-            }
-        };
-
-        fetchRules();
-    }, []);
-
-    useEffect(() => {
-        if (!tariff || !taxRule || !rulesLoaded) return;
+        if (!tariff || !tariff.tiers || loadingCosts) return;
 
         const sd = Number(sdInput) || 0;
         const maneuver = Number(maneuverInput) || 0;
-
         const logs: string[] = [];
         let exchangeRateUsed: number | undefined = undefined;
 
-        const baseKm = tariff.tiers.base.included_km;
-        const baseCost = tariff.tiers.base.cost;
-        const extraKmCost = tariff.tiers.extra.cost_per_km;
+        const { base, extra } = tariff.tiers;
+        let distanceCost = sd <= base.included_km
+            ? (sd > 0 ? base.cost : 0)
+            : base.cost + ((sd - base.included_km) * extra.cost_per_km);
 
-        let distanceCost = 0;
-
-        if (sd <= baseKm) {
-            distanceCost = sd > 0 ? baseCost : 0;
-            if (sd > 0) logs.push(`Tarifa Base (${baseKm}km): ₡${baseCost}`);
-        } else {
-            const extraKm = sd - baseKm;
-            distanceCost = baseCost + (extraKm * extraKmCost);
-            logs.push(`Base (${baseKm}km): ₡${baseCost} + Extra (${extraKm}km): ₡${extraKm * extraKmCost}`);
-        }
+        if (sd > 0) logs.push(`Tarifa Base: ₡${distanceCost.toLocaleString()}`);
 
         const tollsCost = selectedTollsIds.reduce((sum, id) => {
             const toll = allTolls.find(t => t.id === id);
             return sum + (toll?.prices.tow || 0);
         }, 0);
 
-        const totalServiceCost = distanceCost + maneuver + tollsCost;
+        let fixedFee = 0;
 
-        let clientPaysService = 0;
-        let clientPaysTolls = 0;
-        let coveredAmount = 0;
+        if (benefit?.apply_fixed_fee === true) {
+            fixedFee = tariff.fixed_fee_amount || 0;
 
-        if (benefit) {
-            if (benefit.benefit_type === 'distance_cap') {
-                const limitKm = benefit.limit_value;
-
-                if (sd <= limitKm) {
-                    coveredAmount = totalServiceCost;
-                    logs.push(`✅ Cubierto por plan de ${limitKm} KM`);
-                } else {
-                    const excessKm = sd - limitKm;
-
-                    clientPaysService = excessKm * extraKmCost;
-                    clientPaysTolls = tollsCost;
-
-                    coveredAmount = totalServiceCost - (clientPaysService + clientPaysTolls);
-                    logs.push(`⚠️ Excede por ${excessKm} KM`);
-                }
-            } else {
-                let limitMoney = benefit.limit_value;
-
-                if (benefit.currency === 'USD') {
-                    limitMoney = limitMoney * currentExchangeRate;
-                    exchangeRateUsed = currentExchangeRate;
-                }
-
-                if (totalServiceCost <= limitMoney) {
-                    coveredAmount = totalServiceCost;
-                } else {
-                    coveredAmount = limitMoney;
-                    clientPaysService = totalServiceCost - limitMoney;
-                }
+            if (fixedFee > 0) {
+                logs.push(`Fee Administrativo: ₡${fixedFee.toLocaleString()}`);
             }
-        } else {
-            clientPaysService = distanceCost + maneuver;
-            clientPaysTolls = tollsCost;
         }
 
-        let tax = 0;
-        const applyTax = taxRule.type === 'excess_only' || (taxRule as any).apply_to_excess === true;
+        const totalServiceCost = distanceCost + maneuver + tollsCost + fixedFee;
 
-        if (clientPaysService > 0 && applyTax) {
-            tax = clientPaysService * taxRule.rate;
-            logs.push(`IVA (${taxRule.rate * 100}% sobre ₡${clientPaysService}): ₡${tax}`);
+        let limitMoney = benefit?.limit_value || 0;
+
+        if (benefit?.currency === 'USD') {
+            exchangeRateUsed = currentExchangeRate;
+            limitMoney = limitMoney * currentExchangeRate;
         }
 
-        const finalExcedente = clientPaysService + clientPaysTolls;
-        const finalTotal = finalExcedente + tax;
+        const coveredAmount = Math.min(totalServiceCost, limitMoney);
+        const clientPaysService = totalServiceCost - coveredAmount;
+
+        const tax = clientPaysService * 0.13;
+        if (tax > 0) logs.push(`IVA (13%): ₡${Math.round(tax).toLocaleString()}`);
 
         setQuote({
             serviceSubtotal: totalServiceCost,
             benefitCovered: coveredAmount,
-            clientExcedente: finalExcedente,
+            clientExcedente: clientPaysService,
             taxAmount: tax,
-            finalTotal: finalTotal,
+            finalTotal: clientPaysService + tax,
             breakdown: logs,
             exchangeRateUsed
         });
 
-    }, [sdInput, maneuverInput, selectedTollsIds, benefit, tariff, taxRule, currentExchangeRate, rulesLoaded]);
+    }, [sdInput, maneuverInput, selectedTollsIds, benefit, tariff, currentExchangeRate, loadingCosts]);
 
-    return { quote, rulesLoaded };
+    return { quote, rulesLoaded: !loadingCosts };
 };

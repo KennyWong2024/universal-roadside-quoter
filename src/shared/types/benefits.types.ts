@@ -23,4 +23,5 @@ export interface Benefit {
     apply_airport_fee?: boolean;
     fuel_limits?: FuelLimits;
     fuel_metadata?: FuelMetadata;
+    apply_fixed_fee?: boolean;
 }

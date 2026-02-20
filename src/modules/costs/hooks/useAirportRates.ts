@@ -1,4 +1,5 @@
-import { useCostsContext, type TaxiRate } from '@/shared/context/CostsContext';
+import { useCostsContext } from '@/shared/context/CostsContext';
+import { type TaxiRate } from '@/shared/types/costs.types';
 
 export type { TaxiRate };
 

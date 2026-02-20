@@ -2,24 +2,10 @@ import { createContext, useContext, useState, useEffect, useCallback, type React
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
 import { useDevMonitorStore } from '@/modules/devtools/store/useDevMonitorStore';
-
-export interface TaxiRate {
-    id: string;
-    active: boolean;
-    airport_id: string;
-    country: string;
-    currency: string;
-    price: number;
-    location: {
-        province: string;
-        canton: string;
-        district: string;
-    };
-    search_keywords?: string[];
-}
+import type { TaxiRate, ServiceTariff } from '@/shared/types/costs.types';
 
 interface CostsContextType {
-    tariffs: any[];
+    tariffs: ServiceTariff[];
     fuel: any | null;
     airportRates: TaxiRate[];
     loading: boolean;
@@ -29,7 +15,7 @@ interface CostsContextType {
 const CostsContext = createContext<CostsContextType | undefined>(undefined);
 
 export const CostsProvider = ({ children }: { children: ReactNode }) => {
-    const [tariffs, setTariffs] = useState<any[]>([]);
+    const [tariffs, setTariffs] = useState<ServiceTariff[]>([]);
     const [fuel, setFuel] = useState<any | null>(null);
     const [airportRates, setAirportRates] = useState<TaxiRate[]>([]);
 
@@ -49,7 +35,10 @@ export const CostsProvider = ({ children }: { children: ReactNode }) => {
                 getDocs(query(collection(db, 'airport_taxi_rates'), orderBy('location.province')))
             ]);
 
-            const tariffsData = tariffsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            const tariffsData = tariffsSnap.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })) as ServiceTariff[];
             setTariffs(tariffsData);
 
             const fuelData = fuelSnap.docs[0] ? { id: fuelSnap.docs[0].id, ...fuelSnap.docs[0].data() } : null;
