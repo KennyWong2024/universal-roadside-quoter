@@ -4,6 +4,7 @@ import { GlassCard } from '@/shared/ui/GlassCard';
 import { TowingForm } from '../components/towing/TowingForm';
 import { HeavyTowingForm } from '../components/heavy/HeavyTowingForm';
 import { AirportForm } from '../components/airport/AirportForm';
+import { HomeForm } from '../components/home/HomeForm';
 
 export const CalculatorLayout = () => {
     const { activeTab, setActiveTab, isFloating, setIsFloating } = useCalculatorStore();
@@ -13,12 +14,7 @@ export const CalculatorLayout = () => {
             {activeTab === 'towing' && <TowingForm />}
             {activeTab === 'heavy' && <HeavyTowingForm />}
             {activeTab === 'taxi_airport' && <AirportForm />}
-            {activeTab === 'home' && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 text-center text-slate-400 py-20">
-                    <Home size={48} className="mx-auto mb-4 opacity-20" />
-                    <p className="font-medium">Módulo de Asistencia Hogar pendiente</p>
-                </div>
-            )}
+            {activeTab === 'home' && <HomeForm />}
         </div>
     );
 

@@ -3,6 +3,7 @@ import { Car, Plane, Home, Truck } from 'lucide-react';
 import { TowingForm } from '../components/towing/TowingForm';
 import { HeavyTowingForm } from '../components/heavy/HeavyTowingForm';
 import { AirportForm } from '../components/airport/AirportForm';
+import { HomeForm } from '../components/home/HomeForm';
 
 export const FloatingCalculator = () => {
     const { activeTab, setActiveTab } = useCalculatorStore();
@@ -23,12 +24,7 @@ export const FloatingCalculator = () => {
                     {activeTab === 'towing' && <TowingForm />}
                     {activeTab === 'heavy' && <HeavyTowingForm />}
                     {activeTab === 'taxi_airport' && <AirportForm />}
-                    {activeTab === 'home' && (
-                        <div className="text-center text-slate-400 py-20 flex flex-col items-center">
-                            <Home size={48} className="mb-4 opacity-20" />
-                            <p className="font-medium text-lg">Módulo pendiente</p>
-                        </div>
-                    )}
+                    {activeTab === 'home' && <HomeForm />}
                 </div>
             </main>
         </div>
@@ -40,8 +36,8 @@ const NavButton = ({ isActive, onClick, icon, title }: any) => (
         onClick={onClick}
         title={title}
         className={`p-2.5 rounded-lg transition-all ${isActive
-                ? 'bg-blue-600 text-white shadow-md scale-105'
-                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-white'
+            ? 'bg-blue-600 text-white shadow-md scale-105'
+            : 'text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-800 dark:hover:text-white'
             }`}
     >
         {icon}

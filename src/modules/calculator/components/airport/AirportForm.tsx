@@ -103,7 +103,7 @@ export const AirportForm = () => {
                                         : 'bg-white border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-slate-700 hover:border-sky-300'}`}
                             >
                                 <span className="text-lg">➝</span>
-                                Solo Ida
+                                Servicio Único
                             </button>
                             <button
                                 onClick={() => setTripType('round_trip')}
@@ -113,7 +113,7 @@ export const AirportForm = () => {
                                         : 'bg-white border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-slate-700 hover:border-sky-300'}`}
                             >
                                 <span className="text-lg">⇆</span>
-                                Ida y Vuelta
+                                Servicio de Ida y Vuelta
                             </button>
                         </div>
                     </div>
