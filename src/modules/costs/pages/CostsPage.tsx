@@ -13,6 +13,8 @@ import { FuelCard } from '../components/FuelCard';
 import { TollsTableCard } from '../components/TollsTableCard';
 import { AirportConfigCard } from '../components/AirportConfigCard';
 import { HomeConfigCard } from '../components/home/HomeConfigCard';
+// 👇 Importamos el nuevo componente
+import { TowingConfigCard } from '../components/towing/TowingConfigCard';
 
 type TabType = 'general' | 'tolls' | 'home' | 'taxi';
 
@@ -90,7 +92,6 @@ export const CostsPage = () => {
                     </div>
                 </div>
 
-                {/* MENÚ DE NAVEGACIÓN DESACOPLADO EN 4 PESTAÑAS */}
                 <div className="flex flex-wrap gap-1 p-1 bg-slate-200 dark:bg-slate-800/50 rounded-xl backdrop-blur-md border border-slate-300 dark:border-slate-700/50">
                     <TabButton
                         isActive={activeTab === 'general'}
@@ -119,12 +120,17 @@ export const CostsPage = () => {
                 </div>
             </div>
 
-            {/* TARIFAS BASE (Grúas, Taxi Base, Parqueo, Gasolina) */}
+            {/* TARIFAS BASE REDISEÑADAS */}
             {activeTab === 'general' && (
                 <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
-                        {towing && <TariffCard title="Grúa Liviana" type="towing" data={towing} onSave={handleSaveTariff} />}
-                        {heavy && <TariffCard title="Grúa Pesada" type="heavy" data={heavy} onSave={handleSaveTariff} />}
+                    {/* Fila 1: Grúas - Expandidas */}
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        {towing && <TowingConfigCard title="Grúa Liviana" type="towing" data={towing} onSave={handleSaveTariff} />}
+                        {heavy && <TowingConfigCard title="Grúa Pesada" type="heavy" data={heavy} onSave={handleSaveTariff} />}
+                    </div>
+
+                    {/* Fila 2: Complementos - Compactos */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {taxiBase && <TariffCard title="Taxi (Base)" type="taxi" data={taxiBase} onSave={handleSaveTariff} />}
                         {airportConfig && <AirportConfigCard data={airportConfig} onSave={handleSaveTariff} />}
                         {fuel && <FuelCard data={fuel} onSave={handleSaveFuel} />}
