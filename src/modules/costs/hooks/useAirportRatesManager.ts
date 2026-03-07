@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { collection, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from '@/core/firebase/firebase.client';
 import { useCostsContext } from '@/shared/context/CostsContext';
 
 export const useAirportRatesManager = () => {
     const [isSaving, setIsSaving] = useState(false);
-
     const { refreshCosts } = useCostsContext();
 
     const saveRate = async (rateData: any) => {
@@ -25,8 +24,17 @@ export const useAirportRatesManager = () => {
                 const { id, ...data } = payload;
                 await updateDoc(doc(db, 'airport_taxi_rates', id), data);
             } else {
-                await addDoc(collection(db, 'airport_taxi_rates'), payload);
+                const cleanStr = (str: string) =>
+                    str.normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .toUpperCase()
+                        .replace(/\s+/g, '_');
+
+                const customId = `CR_${cleanStr(rateData.location.province)}_${cleanStr(rateData.location.canton)}_${cleanStr(rateData.location.district)}_${rateData.airport_id}`;
+
+                await setDoc(doc(db, 'airport_taxi_rates', customId), payload);
             }
+
             await refreshCosts();
             return true;
         } catch (error) {
