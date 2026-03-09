@@ -1,13 +1,15 @@
 import { useCalculatorStore } from '../store/calculator.store';
-import { Car, Plane, Home, Truck, PictureInPicture2 } from 'lucide-react';
+import { Car, Plane, Home, Truck, PictureInPicture2, CarFront } from 'lucide-react';
 import { GlassCard } from '@/shared/ui/GlassCard';
 import { TowingForm } from '../components/towing/TowingForm';
 import { HeavyTowingForm } from '../components/heavy/HeavyTowingForm';
 import { AirportForm } from '../components/airport/AirportForm';
 import { HomeForm } from '../components/home/HomeForm';
+import { TaxiTransferForm } from '../components/taxi_transfer/TaxiTransferForm';
 
 export const CalculatorLayout = () => {
     const { activeTab, setActiveTab, isFloating, setIsFloating } = useCalculatorStore();
+
     const renderActiveForm = () => (
         <div className="w-full relative">
             <div className={activeTab === 'towing' ? 'block animate-in fade-in duration-500' : 'hidden'}>
@@ -21,6 +23,9 @@ export const CalculatorLayout = () => {
             </div>
             <div className={activeTab === 'home' ? 'block animate-in fade-in duration-500' : 'hidden'}>
                 <HomeForm />
+            </div>
+            <div className={activeTab === 'taxi_transfer' ? 'block animate-in fade-in duration-500' : 'hidden'}>
+                <TaxiTransferForm />
             </div>
         </div>
     );
@@ -51,6 +56,7 @@ export const CalculatorLayout = () => {
 
                     <div className="flex flex-wrap justify-center p-1 bg-slate-200 dark:bg-slate-800/50 rounded-2xl backdrop-blur-md border border-slate-300 dark:border-slate-700/50 relative">
                         <TabButton isActive={activeTab === 'towing'} onClick={() => setActiveTab('towing')} icon={<Car size={18} />} label="Grúa Liviana" />
+                        <TabButton isActive={activeTab === 'taxi_transfer'} onClick={() => setActiveTab('taxi_transfer')} icon={<CarFront size={18} />} label="Taxi" />
                         <TabButton isActive={activeTab === 'heavy'} onClick={() => setActiveTab('heavy')} icon={<Truck size={18} />} label="Grúa Pesada" />
                         <TabButton isActive={activeTab === 'taxi_airport'} onClick={() => setActiveTab('taxi_airport')} icon={<Plane size={18} />} label="Taxi Aeropuerto" />
                         <TabButton isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} icon={<Home size={18} />} label="Asistencia Hogar" />

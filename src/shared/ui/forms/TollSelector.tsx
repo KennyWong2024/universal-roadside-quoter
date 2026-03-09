@@ -15,7 +15,7 @@ interface TollSelectorProps {
     tolls: Toll[];
     selectedTolls: string[];
     onToggle: (id: string) => void;
-    type: 'tow' | 'heavy';
+    type: 'tow' | 'heavy' | 'light' | 'microbus';
 }
 
 export const TollSelector = ({ tolls, selectedTolls, onToggle, type }: TollSelectorProps) => {

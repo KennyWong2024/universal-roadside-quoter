@@ -89,7 +89,7 @@ export interface ServiceTariff {
     };
 
     home_config?: {
-        night_surcharge: number; // Ej: 5000
+        night_surcharge: number;
         hourly_rates: HomeHourlyRate[];
         mileage_ranges: HomeMileageRange[];
     };

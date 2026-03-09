@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type CalculatorType = 'towing' | 'heavy' | 'taxi_airport' | 'home';
+export type CalculatorType = 'towing' | 'heavy' | 'taxi_airport' | 'home' | 'taxi_transfer'
 
 interface CalculatorState {
     activeTab: CalculatorType;

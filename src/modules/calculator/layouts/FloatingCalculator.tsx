@@ -1,9 +1,10 @@
 import { useCalculatorStore } from '../store/calculator.store';
-import { Car, Plane, Home, Truck } from 'lucide-react';
+import { Car, Plane, Home, Truck, CarFront } from 'lucide-react';
 import { TowingForm } from '../components/towing/TowingForm';
 import { HeavyTowingForm } from '../components/heavy/HeavyTowingForm';
 import { AirportForm } from '../components/airport/AirportForm';
 import { HomeForm } from '../components/home/HomeForm';
+import { TaxiTransferForm } from '../components/taxi_transfer/TaxiTransferForm';
 
 export const FloatingCalculator = () => {
     const { activeTab, setActiveTab } = useCalculatorStore();
@@ -13,6 +14,7 @@ export const FloatingCalculator = () => {
             <header className="flex items-center justify-center px-3 py-2 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 z-50 shrink-0 shadow-sm">
                 <div className="flex items-center gap-2">
                     <NavButton isActive={activeTab === 'towing'} onClick={() => setActiveTab('towing')} icon={<Car size={18} />} title="Grúa Liviana" />
+                    <NavButton isActive={activeTab === 'taxi_transfer'} onClick={() => setActiveTab('taxi_transfer')} icon={<CarFront size={18} />} title="Taxi Traslado" />
                     <NavButton isActive={activeTab === 'heavy'} onClick={() => setActiveTab('heavy')} icon={<Truck size={18} />} title="Grúa Pesada" />
                     <NavButton isActive={activeTab === 'taxi_airport'} onClick={() => setActiveTab('taxi_airport')} icon={<Plane size={18} />} title="Taxi Aeropuerto" />
                     <NavButton isActive={activeTab === 'home'} onClick={() => setActiveTab('home')} icon={<Home size={18} />} title="Asistencia Hogar" />
@@ -32,6 +34,9 @@ export const FloatingCalculator = () => {
                     </div>
                     <div className={activeTab === 'home' ? 'block' : 'hidden'}>
                         <HomeForm />
+                    </div>
+                    <div className={activeTab === 'taxi_transfer' ? 'block' : 'hidden'}>
+                        <TaxiTransferForm />
                     </div>
                 </div>
             </main>
