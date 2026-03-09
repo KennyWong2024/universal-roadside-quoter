@@ -20,11 +20,19 @@ export const FloatingCalculator = () => {
             </header>
 
             <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 custom-scrollbar">
-                <div className="origin-top-left transition-all duration-300" style={{ transform: 'scale(0.85)', width: '117.64%' }}>
-                    {activeTab === 'towing' && <TowingForm />}
-                    {activeTab === 'heavy' && <HeavyTowingForm />}
-                    {activeTab === 'taxi_airport' && <AirportForm />}
-                    {activeTab === 'home' && <HomeForm />}
+                <div className="origin-top-left transition-all duration-300 relative" style={{ transform: 'scale(0.85)', width: '117.64%' }}>
+                    <div className={activeTab === 'towing' ? 'block' : 'hidden'}>
+                        <TowingForm />
+                    </div>
+                    <div className={activeTab === 'heavy' ? 'block' : 'hidden'}>
+                        <HeavyTowingForm />
+                    </div>
+                    <div className={activeTab === 'taxi_airport' ? 'block' : 'hidden'}>
+                        <AirportForm />
+                    </div>
+                    <div className={activeTab === 'home' ? 'block' : 'hidden'}>
+                        <HomeForm />
+                    </div>
                 </div>
             </main>
         </div>

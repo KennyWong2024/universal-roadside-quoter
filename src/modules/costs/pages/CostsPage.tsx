@@ -13,7 +13,6 @@ import { FuelCard } from '../components/FuelCard';
 import { TollsTableCard } from '../components/TollsTableCard';
 import { AirportConfigCard } from '../components/AirportConfigCard';
 import { HomeConfigCard } from '../components/home/HomeConfigCard';
-// 👇 Importamos el nuevo componente
 import { TowingConfigCard } from '../components/towing/TowingConfigCard';
 
 type TabType = 'general' | 'tolls' | 'home' | 'taxi';

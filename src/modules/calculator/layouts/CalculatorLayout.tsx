@@ -8,13 +8,20 @@ import { HomeForm } from '../components/home/HomeForm';
 
 export const CalculatorLayout = () => {
     const { activeTab, setActiveTab, isFloating, setIsFloating } = useCalculatorStore();
-
     const renderActiveForm = () => (
-        <div className="w-full">
-            {activeTab === 'towing' && <TowingForm />}
-            {activeTab === 'heavy' && <HeavyTowingForm />}
-            {activeTab === 'taxi_airport' && <AirportForm />}
-            {activeTab === 'home' && <HomeForm />}
+        <div className="w-full relative">
+            <div className={activeTab === 'towing' ? 'block animate-in fade-in duration-500' : 'hidden'}>
+                <TowingForm />
+            </div>
+            <div className={activeTab === 'heavy' ? 'block animate-in fade-in duration-500' : 'hidden'}>
+                <HeavyTowingForm />
+            </div>
+            <div className={activeTab === 'taxi_airport' ? 'block animate-in fade-in duration-500' : 'hidden'}>
+                <AirportForm />
+            </div>
+            <div className={activeTab === 'home' ? 'block animate-in fade-in duration-500' : 'hidden'}>
+                <HomeForm />
+            </div>
         </div>
     );
 
@@ -79,9 +86,10 @@ export const CalculatorLayout = () => {
 const TabButton = ({ isActive, onClick, icon, label }: any) => (
     <button
         onClick={onClick}
+        title={label}
         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 m-1 ${isActive ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-md shadow-slate-900/5 transform scale-105' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-700/50'}`}
     >
         {icon}
-        <span className="hidden md:inline">{label}</span>
+        <span className="hidden xl:inline">{label}</span>
     </button>
 );
