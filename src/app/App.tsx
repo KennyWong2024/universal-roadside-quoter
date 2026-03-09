@@ -15,7 +15,7 @@ import { TollsProvider } from '@/shared/context/TollsContext';
 import { DevPanelPage } from '@/modules/devtools/pages/DevPanelPage';
 import { UsersProvider } from '@/shared/context/UsersContext';
 import { AnalyticsTracker } from '@/shared/analytics/AnalyticsTracker';
-
+import { ChatReportingPage } from '@/modules/chatreporting/pages/ChatReportingPage';
 
 function App() {
   const { user, status, checkSession } = useAuthStore();
@@ -54,17 +54,10 @@ function App() {
                   <Route path="/" element={<DashboardLayout />}>
                     <Route index element={<Navigate to="/cotizador" replace />} />
                     <Route path="cotizador" element={<CalculatorLayout />} />
+                    <Route path="chat-reporting" element={<ChatReportingPage />} />
                     <Route path="matriz-costos" element={<CostsPage />} />
                     <Route path="matriz-beneficios" element={<BenefitsPage />} />
                     <Route path="usuarios" element={<UserManagementPage />} />
-                    <Route
-                      path="notas"
-                      element={
-                        <div className="p-8 text-slate-500 dark:text-slate-400 italic">
-                          El gestor de notas estará disponible pronto.
-                        </div>
-                      }
-                    />
                     <Route path="monitoreo" element={<DevPanelPage />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />
