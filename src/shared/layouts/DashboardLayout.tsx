@@ -1,9 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store/auth.store';
-import { LogOut, Calculator, FileText, Table2, Sun, Moon, Users, Activity } from 'lucide-react';
+import { LogOut, Calculator, MessageSquareText, Table2, Sun, Moon, Users, Activity } from 'lucide-react';
 import { useTheme } from '../theme/useTheme';
-
-// 👇 1. IMPORTAMOS NUESTRAS HERRAMIENTAS GLOBALES DE LA VENTANA
 import { useCalculatorStore } from '@/modules/calculator/store/calculator.store';
 import { PiPWindow } from '@/shared/ui/PiPWindow';
 import { FloatingCalculator } from '@/modules/calculator/layouts/FloatingCalculator';
@@ -11,8 +9,6 @@ import { FloatingCalculator } from '@/modules/calculator/layouts/FloatingCalcula
 export const DashboardLayout = () => {
     const { user, signOut } = useAuthStore();
     const { theme, toggleTheme } = useTheme();
-
-    // 👇 2. ESCUCHAMOS EL ESTADO DE LA VENTANA
     const { isFloating, setIsFloating } = useCalculatorStore();
 
     return (
@@ -29,7 +25,7 @@ export const DashboardLayout = () => {
                 {/* MENÚ DE NAVEGACIÓN PRINCIPAL */}
                 <nav className="flex-1 py-8 flex flex-col gap-2 px-2 lg:px-4">
                     <NavItem to="/cotizador" icon={<Calculator size={20} />} label="Cotizador" />
-                    <NavItem to="/notas" icon={<FileText size={20} />} label="Notas" />
+                    <NavItem to="/chat-reporting" icon={<MessageSquareText size={20} />} label="Chat Reporting" />
                     <NavItem to="/matriz-costos" icon={<Table2 size={20} />} label="Matriz Costos" />
                     <NavItem to="/matriz-beneficios" icon={<Table2 size={20} />} label="Matriz Beneficios" />
                     {(user?.role === 'admin' || user?.is_dev) && (
@@ -76,7 +72,6 @@ export const DashboardLayout = () => {
                 </div>
             </main>
 
-            {/* 👇 3. EL GUARDIÁN GLOBAL DE LA VENTANA 👇 */}
             {isFloating && (
                 <PiPWindow onClose={() => setIsFloating(false)}>
                     <FloatingCalculator />
