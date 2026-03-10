@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { MessageSquareText, History, Wrench } from 'lucide-react';
+// 👇 1. Descomentamos la importación 👇
+import { MessageGenerator } from '../components/generator/MessageGenerator';
 
 type TabType = 'generator' | 'history';
 
@@ -20,7 +22,6 @@ export const ChatReportingPage = () => {
                     </div>
                 </div>
 
-                {/* PESTAÑAS PRINCIPALES */}
                 <div className="flex p-1 bg-slate-200 dark:bg-slate-800/50 rounded-xl backdrop-blur-md border border-slate-300 dark:border-slate-700/50">
                     <button
                         onClick={() => setActiveTab('generator')}
@@ -49,10 +50,8 @@ export const ChatReportingPage = () => {
             <div className="relative">
                 {/* 1. EL GENERADOR */}
                 <div className={activeTab === 'generator' ? 'block' : 'hidden'}>
-                    <div className="min-h-[600px] bg-white/60 dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm flex items-center justify-center">
-                        <p className="text-slate-400">Aquí irá el layout dividido con los formularios y el chat preview...</p>
-                        {/* <MessageGenerator /> */}
-                    </div>
+                    {/* 👇 2. Renderizamos el orquestador real aquí 👇 */}
+                    <MessageGenerator />
                 </div>
 
                 {/* 2. EL HISTORIAL (EN DESARROLLO) */}
